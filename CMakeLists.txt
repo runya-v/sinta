@@ -15,6 +15,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 # Общие флаги для всех сборок.
 add_definitions(
     -pedantic  -pedantic-errors
+    -std=gnu++11
     -pipe -fPIC 
     -Wall -Wno-long-long -Wno-inline 
     -finline-functions -finline-limit=2000

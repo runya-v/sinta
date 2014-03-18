@@ -2,8 +2,10 @@
 
 
 namespace base {
-    
+
     class Timer {
+        ThreadPtr _timer_thread;
+
     public:
         template<class Callable, class... Arguments>
         Timer(int after, bool async, Callable &&f, Arguments&&... args) {
@@ -17,8 +19,8 @@ namespace base {
                     task();
                 };
 
-                ThreadPtr timer_thread(new std::thread(timer_run));
-                timer_thread->detach();
+                _timer_thread = std::make_shared<std::thread>(imer_run);
+                _timer_thread->detach();
             }
             else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(after));
