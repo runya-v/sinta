@@ -1,4 +1,3 @@
-# - Find mysqlclient
 # Find the native CPPCMS includes and library
 #
 #  CTPP2_INCLUDE_DIR - where to find *.h, etc.
