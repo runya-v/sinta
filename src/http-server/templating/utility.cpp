@@ -109,4 +109,3 @@ FileContent::operator bool () {
 FileContent::operator const std::string& () {
     return _content;
 }
-

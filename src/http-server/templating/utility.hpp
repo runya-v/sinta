@@ -65,7 +65,7 @@ namespace tmplt {
         
     public:
         FileContent(const std::string &file);
-        
+
         operator bool ();
         operator const std::string& ();
     };
