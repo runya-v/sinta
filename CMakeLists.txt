@@ -14,6 +14,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 # Общие флаги для всех сборок.
 add_definitions(
+    -std=gnu++11
     -pedantic  -pedantic-errors
     -std=gnu++11
     -pipe -fPIC 

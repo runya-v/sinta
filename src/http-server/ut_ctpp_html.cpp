@@ -15,20 +15,20 @@
 #include <boost/format.hpp>
 #include <boost/utility.hpp> 
 
-#include <ctpp2/CTPP2Parser.hpp>
-#include <ctpp2/CTPP2FileSourceLoader.hpp>
-#include <ctpp2/CTPP2FileOutputCollector.hpp>
-#include <ctpp2/CTPP2ParserException.hpp>
-#include <ctpp2/CTPP2HashTable.hpp>
-#include <ctpp2/CTPP2VMDumper.hpp>
-#include <ctpp2/CTPP2VMOpcodes.h>
-#include <ctpp2/CTPP2SyscallFactory.hpp>
-#include <ctpp2/CTPP2VMFileLoader.hpp>
-#include <ctpp2/CTPP2JSONFileParser.hpp>
-#include <ctpp2/CTPP2VM.hpp>
-#include <ctpp2/CTPP2VMSTDLib.hpp>
-#include <ctpp2/CTPP2VMException.hpp>
-#include <ctpp2/CTPP2VMStackException.hpp>
+//#include <ctpp2/CTPP2Parser.hpp>
+//#include <ctpp2/CTPP2FileSourceLoader.hpp>
+//#include <ctpp2/CTPP2FileOutputCollector.hpp>
+//#include <ctpp2/CTPP2ParserException.hpp>
+//#include <ctpp2/CTPP2HashTable.hpp>
+//#include <ctpp2/CTPP2VMDumper.hpp>
+//#include <ctpp2/CTPP2VMOpcodes.h>
+//#include <ctpp2/CTPP2SyscallFactory.hpp>
+//#include <ctpp2/CTPP2VMFileLoader.hpp>
+//#include <ctpp2/CTPP2JSONFileParser.hpp>
+//#include <ctpp2/CTPP2VM.hpp>
+//#include <ctpp2/CTPP2VMSTDLib.hpp>
+//#include <ctpp2/CTPP2VMException.hpp>
+//#include <ctpp2/CTPP2VMStackException.hpp>
 
 #include "Log.hpp"
 #include "HtmlMaker.hpp"
@@ -152,34 +152,55 @@ const char RESULT[] =
             "</div>"
         "</body>"
     "</html>";
+
  
+const char TEST_TMPL_2[] = 
+    "<html>" 
+        "<head>" 
+            "<title>News List</title>" 
+            "<style type=\"text/css\">" 
+                "a {" 
+                    "font-family: Verdana, Arial, Helvetica, sans-serif;" 
+                    "color: black; font-size: 8pt; font-weight: bold;" 
+                "}" 
+                "span {" 
+                    "font-family: Verdana, Arial, Helvetica, sans-serif;" 
+                    "color: black; font-size: 10pt; font-weight: normal;" 
+                "}" 
+                "span.date {" 
+                    "font-family: Verdana, Arial, Helvetica, sans-serif;" 
+                    "color: #D00000; font-size: 10pt; font-weight: normal;" 
+                "}" 
+            "</style>" 
+        "</head>" 
+        "<body>" 
+            "<TMPL_var TEXT_FILE_LOAD(test_file_name)>" 
+        "</body>" 
+    "</html>";
 
 
-class FileContent {
-    std::string _content;
-    
-public:
-    FileContent(const std::string &file) {
-        if (base::bfs::exists(base::bfs::path(file))) {
-            std::ifstream ifs(file.c_str());
-            _content = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-        }
-    }
-    
-    operator const std::string& () {
-        return _content;
-    }
-};
+const char TEST_JSON_2[] = 
+    "{\n"
+    "   \"test_file_name\" : \"ut_ctpp_file_load.cpp\""
+    "}\n";
+
+
+const char RESULT_2[] = "";
 
 
 struct TestGenerate {
-    TestGenerate(const base::bfs::path &cur_path) {
-        tmplt::FileSaver file_tmpl(TEST_TMPL, sizeof(TEST_TMPL) - 1, (cur_path / "test.tmpl").string());
-        tmplt::FileSaver file_json(TEST_JSON, sizeof(TEST_JSON) - 1, (cur_path / "test.json").string());
+    TestGenerate(
+        const std::string &test_tmplt, 
+        const std::string &test_json, 
+        const base::bfs::path &cur_path,
+        const std::string &result) 
+    {
+        tmplt::FileSaver file_tmpl(test_tmplt.c_str(), test_tmplt.size(), (cur_path / "test.tmpl").string());
+        tmplt::FileSaver file_json(test_json.c_str(), test_json.size(), (cur_path / "test.json").string());
         http_server::HtmlMaker make((cur_path / "test.html").string());
         std::string file_make = make;
-        FileContent fcont(file_make);
-        BOOST_CHECK_EQUAL(std::string(fcont), std::string(RESULT));
+        tmplt::FileContent fcont(file_make);
+        BOOST_CHECK_EQUAL(std::string(fcont), result);
     }
 };
 
@@ -192,8 +213,9 @@ BOOST_AUTO_TEST_CASE(TestCtppHttpGenerate) {
         LOG(DEBUG) << "Remove `" << (cur_path / "test.html") << "`";
         base::bfs::remove(cur_path / "test.html");
     }
-    TestGenerate tgen(cur_path);
+    TestGenerate tgen(TEST_TMPL, TEST_JSON, cur_path, RESULT);
 }
+
 
 BOOST_AUTO_TEST_CASE(TestCtppHttpUpdate) {
     LOG_TO_STDOUT;
@@ -201,7 +223,25 @@ BOOST_AUTO_TEST_CASE(TestCtppHttpUpdate) {
     base::bfs::path cur_path = base::bfs::absolute(base::bfs::current_path());
 
     if (not base::bfs::exists(cur_path / "test.html")) {
-        BOOST_ERROR( "Old version file is not exists." );        
+        BOOST_ERROR("Old version file is not exists.");        
     }
-    TestGenerate tgen(cur_path);
+    TestGenerate tgen(TEST_TMPL, TEST_JSON, cur_path, RESULT);
+}
+
+
+BOOST_AUTO_TEST_CASE(TestCtppTextFileLoad) {
+    LOG_TO_STDOUT;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    base::bfs::path cur_path = base::bfs::absolute(base::bfs::current_path());
+   
+    if (base::bfs::exists(cur_path / "test.html")) {
+        LOG(DEBUG) << "Remove `" << (cur_path / "test.html") << "`";
+        base::bfs::remove(cur_path / "test.html");
+    }
+    TestGenerate tgen(TEST_TMPL_2, TEST_JSON_2, cur_path, RESULT_2);
+    tm tm_;
+    const char *str = "14:35:35 2014-03-27";
+    strptime(str, "%H:%M:%S %Y-%m-%d", &tm_);
+    uint64_t time = mktime(&tm_);
+    LOG(DEBUG) << time;
 }

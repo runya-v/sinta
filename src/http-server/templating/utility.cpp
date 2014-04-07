@@ -88,3 +88,25 @@ StdoutToFile::~StdoutToFile() {
     fclose(_file);
     dup2(_saved_stdout, STDOUT_FILENO);
 }    
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+FileContent::FileContent(const std::string &file) 
+    : _result(false) 
+{
+    if (base::bfs::exists(base::bfs::path(file))) {
+        std::ifstream ifs(file.c_str());
+        _content = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    }
+}
+
+
+FileContent::operator bool () {
+    return _result;
+}
+
+
+FileContent::operator const std::string& () {
+    return _content;
+}
+

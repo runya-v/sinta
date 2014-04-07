@@ -55,4 +55,20 @@ namespace tmplt {
     };
 
     typedef std::shared_ptr<StdoutToFile> StdoutToFilePtr;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    class FileContent  
+        : boost::noncopyable
+    {
+        bool _result;
+        std::string _content;
+        
+    public:
+        FileContent(const std::string &file);
+        
+        operator bool ();
+        operator const std::string& ();
+    };
+
+    typedef std::shared_ptr<FileContent> FileContentPtr;
 } // tmplt
