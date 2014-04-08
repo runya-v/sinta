@@ -46,7 +46,7 @@ const char TEST_JSON[] =
     "}\n";
 
 
-const char RESULT[] = 
+const char RESULT[] = "";
 
 
 struct TestGenerate {
@@ -55,7 +55,7 @@ struct TestGenerate {
         tmplt::FileSaver file_json(TEST_JSON, sizeof(TEST_JSON) - 1, (cur_path / "test.json").string());
         http_server::HtmlMaker make((cur_path / "test.html").string());
         std::string file_make = make;
-        FileContent fcont(file_make);
+        tmplt::FileContent fcont(file_make);
         BOOST_CHECK_EQUAL(std::string(fcont), std::string(RESULT));
     }
 };
