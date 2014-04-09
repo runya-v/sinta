@@ -5,21 +5,30 @@
 
 #include "base.hpp"
 #include "Log.hpp"
-#include "TextFileLoad.hpp"
+#include "TextFileLoader.hpp"
 
 using namespace tmplt;
 
 
-TextFileLoad::~TextFileLoad() throw() 
+TextFileLoader::TextFileLoader()
 {}
 
 
-INT_32 TextFileLoad::Handler(CTPP::CDT *arguments, const UINT_32 &arg_num, CTPP::CDT &ret_val) {
+TextFileLoader::~TextFileLoader() throw() 
+{}
+
+
+CCHAR_P TextFileLoader::GetName() const { 
+    return "TEXT_FILE_LOAD"; 
+}
+
+
+INT_32 TextFileLoader::Handler(CTPP::CDT *arguments, const UINT_32 arg_num, CTPP::CDT &ret_val, CTPP::Logger&) {
 	if (1 not_eq arg_num) { 
         LOG(ERROR) << "Invalid number of arguments of template function.";
     }
     else {
-        std::string file_name = arguments[1].GetString();
+        std::string file_name = arguments[0].GetString();
         base::bfs::path file_path(file_name);
 
         if (not base::bfs::exists(file_path)) {
@@ -32,7 +41,7 @@ INT_32 TextFileLoad::Handler(CTPP::CDT *arguments, const UINT_32 &arg_num, CTPP:
                 LOG(ERROR) << "File `" << file_name << "` is empty.";
             }
             else {
-                std::ifstream ifs("input.txt");
+                std::ifstream ifs(file_name.c_str());
                 
                 if (not ifs.is_open()) {
                     LOG(ERROR) << "Can`t open file `" << file_name << "`.";
@@ -45,9 +54,4 @@ INT_32 TextFileLoad::Handler(CTPP::CDT *arguments, const UINT_32 &arg_num, CTPP:
         }
     }
     return -1;
-}
-
-
-CCHAR_P TextFileLoad::GetName() { 
-    return "TEXT_FILE_LOAD"; 
 }

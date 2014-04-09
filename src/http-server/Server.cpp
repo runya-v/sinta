@@ -7,11 +7,9 @@
 #include "base.hpp"
 #include "Server.hpp"
 
-namespace http_server {
+using namespace http_server;
+using namespace base;
 
-namespace asio = boost::asio;
-
-typedef asio::ip::tcp             Tcp;
 typedef boost::thread             Thread;
 typedef boost::shared_ptr<Thread> PThread;
 typedef std::vector<PThread>      PThreads;
@@ -79,5 +77,4 @@ void Server::run() {
     for (auto thread : threads) {
         thread->join();
     }
-}
 }

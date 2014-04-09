@@ -48,7 +48,8 @@ namespace base {
     class Task;
     class Timer;
     class ThreadPool;
-
+    
+    typedef asio::const_buffer    AcioConstBuffer;
     typedef asio::signal_set      SignalSet;
     typedef asio::io_service      IoService;
     typedef IoService::work       Work;

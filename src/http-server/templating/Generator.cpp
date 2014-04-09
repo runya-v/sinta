@@ -13,7 +13,6 @@
 #include <ctpp2/CTPP2FileSourceLoader.hpp>
 #include <ctpp2/CTPP2FileOutputCollector.hpp>
 #include <ctpp2/CTPP2VMOpcodes.h>
-#include <ctpp2/CTPP2SyscallFactory.hpp>
 #include <ctpp2/CTPP2VMFileLoader.hpp>
 #include <ctpp2/CTPP2JSONFileParser.hpp>
 #include <ctpp2/CTPP2VM.hpp>
@@ -24,8 +23,13 @@
 #include "Log.hpp"
 #include "utility.hpp"
 #include "Generator.hpp"
+#include "TextFileLoader.hpp"
+
 
 using namespace tmplt;
+
+
+const int CTPP_MAX_HANDLERS = 100;
 
 
 Generator::Generator(
@@ -35,10 +39,13 @@ Generator::Generator(
     bool remove) 
     : _remove(remove)
     , _path_result(file_html)  
+    , _syscall_factory(CTPP_MAX_HANDLERS)
+    , _fn_file_load(std::make_shared<TextFileLoader>())
 {
     CFile cfile_out(file_html.string());
     CTPP::FileOutputCollector output_collector(cfile_out);
     CTPP::SyscallFactory syscall_factory(100);
+    syscall_factory.RegisterHandler(_fn_file_load.get());
     CTPP::STDLibInitializer::InitLibrary(syscall_factory);
     CTPP::VMFileLoader loader(file_ct2.string().c_str());
     const CTPP::VMMemoryCore *vm_memory_core = loader.GetCore();
@@ -116,6 +123,8 @@ Generator::Generator(
 
 
 Generator::~Generator() {
+	_syscall_factory.RemoveHandler(_fn_file_load->GetName());
+
     if (base::bfs::exists(_path_result) and _remove) {
         base::bfs::remove(_path_result);
         LOG(INFO) << "Delete: `" << _path_result.string() << "`.";

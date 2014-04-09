@@ -12,14 +12,16 @@
 
 namespace tmplt {
 
-    class TextFileLoad 
+    class TextFileLoader 
         : public CTPP::SyscallHandler
     {
     public:
-        ~TextFileLoad() throw();
+		TextFileLoader();
+        virtual ~TextFileLoader() throw();
 
-    private:
-        INT_32 Handler(CTPP::CDT *arguments, const UINT_32 &arg_num, CTPP::CDT &ret_val);
-        CCHAR_P GetName();
+        virtual CCHAR_P GetName() const;
+        
+	private: 
+        virtual INT_32 Handler(CTPP::CDT *arguments, const UINT_32 arg_num, CTPP::CDT &ret_val, CTPP::Logger&);
     };
 }

@@ -17,13 +17,9 @@
 
 namespace http_server {
 
-    namespace asio = boost::asio;
-
-
     /// A reply to be sent to a client.
     struct Reply {
-        typedef asio::const_buffer Buffer;
-        typedef std::vector<Buffer> Buffers;
+        typedef std::vector<base::AcioConstBuffer> Buffers;
 
         /// The status of the reply.
         enum StatusType {

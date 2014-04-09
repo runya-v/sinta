@@ -1,6 +1,7 @@
 # Настройка конфигурационных макросов
 message(STATUS "Set BOOST_ASIO_ENABLE_SEQUENTIAL_STRAND_ALLOCATION")
 message(STATUS "Set BOOST_ASIO_STRAND_IMPLEMENTATIONS = 10 000")
+add_definitions(-DHTTP_SERVER_DIR="${HTTP_SERVER_DIR}/")
 add_definitions(
     -DBOOST_ASIO_ENABLE_SEQUENTIAL_STRAND_ALLOCATION 
     -DBOOST_ASIO_STRAND_IMPLEMENTATIONS=10000
@@ -18,8 +19,10 @@ add_library(${APP_LIB}
     )
 
 
-add_subdirectory("${HTTP_SERVER_DIR}/templating")
-include_directories("${HTTP_SERVER_DIR}/templating")
+set(HTTP_SERVER_TEMPLATING_DIR "${HTTP_SERVER_DIR}/templating")
+add_definitions(-DTEMPLATING_DIR="${HTTP_SERVER_TEMPLATING_DIR}/")
+add_subdirectory("${HTTP_SERVER_TEMPLATING_DIR}")
+include_directories("${HTTP_SERVER_TEMPLATING_DIR}")
 
 
 set(APP_BIN http-server)

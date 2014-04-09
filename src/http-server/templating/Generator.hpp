@@ -9,16 +9,24 @@
 
 #include <boost/utility.hpp>
 
+#include <ctpp2/CTPP2SyscallFactory.hpp>
+
 #include "base.hpp"
 #include "Compiler.hpp"
 
+
 namespace tmplt {
+
+	class TextFileLoader;
+   
    
     class Generator
         : public boost::noncopyable
     {
         bool _remove;
         base::bfs::path _path_result;
+        CTPP::SyscallFactory _syscall_factory;
+        std::shared_ptr<TextFileLoader> _fn_file_load;
         
     public:
         explicit Generator(
