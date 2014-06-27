@@ -9,7 +9,7 @@ include(CMakeParseArguments)
 
 macro(find_template)
     # Получение списков входных параметров
-    set(OPTIONS ) 
+    set(OPTIONS) 
     set(ONE_VALUE_ARGS COMPONENT_NAME) 
     set(MULTI_VALUE_ARGS INCLUDE_NAMES LIB_NAMES) 
     cmake_parse_arguments(GET "${OPTIONS}" "${ONE_VALUE_ARGS}" "${MULTI_VALUE_ARGS}" ${ARGN}) 

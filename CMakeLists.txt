@@ -116,8 +116,6 @@ add_subdirectory("${SRC_DIR}")
 set(LOG_LIBS z ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_IOSTREAMS_LIBRARY})
 
 if(ENABLE_TESTS)
-    message("Include tests directory to build process")
-
     set(TESTS_DIR ${SRC_DIR}/tests)
     message(STATUS "TESTS_DIR: ${TESTS_DIR}")
 
@@ -128,13 +126,23 @@ if(ENABLE_TESTS)
 
     add_subdirectory("${TESTS_DIR}")
 else(ENABLE_TESTS)
-    message("Directory tests is not included to build. Run cmake -DENABLE_TESTS=ON to include.")
+    message(STATUS "Directory tests is not included to build. Run cmake -DENABLE_TESTS=ON to include.")
 endif(ENABLE_TESTS)
 
 if(ENABLE_CTPP2)
+    # Поиск конкретного указанного теста, в противном случае будут добавлены все тесты
+    set(ALL_TESTS ON)
+    get_cmake_property(VARIABLE_NAMES VARIABLES)
+    foreach (VAR_NAME ${VARIABLE_NAMES})
+        if (VAR_NAME MATCHES "^TEST_(.*)")
+            set(ALL_TESTS OFF)
+        endif()
+    endforeach()
+
     set(HTTP_SERVER_DIR ${SRC_DIR}/http-server)
     message(STATUS "Add dir: `${HTTP_SERVER_DIR}`")
     set(CTPP2_EXT_DIR "${EXT_DIR}/ctpp2")
     take_component(CTPP2)
     add_subdirectory("${HTTP_SERVER_DIR}")
 endif(ENABLE_CTPP2)
+
