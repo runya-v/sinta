@@ -9,7 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
         FORCE
         )
-endif(NOT CMAKE_BUILD_TYPE)
+endif()
 
 
 # Общие флаги для всех сборок.
@@ -31,19 +31,19 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     if(GPROF)
         add_definitions(-pg)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
-    endif(GPROF)
+    endif()
 
     #Добавляем флаги для построения отладочной инфомрации.
     add_definitions(-fno-inline-functions -fno-inline)
 elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
     add_definitions(-O3 -ggdb3)
-endif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+endif()
 
 
 # Установка вспомогательных констант
 set(ROOT_DIR   ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRC_DIR    ${ROOT_DIR}/src)
-set(EXT_DIR    ${SRC_DIR}/ext)
+set(EXT_DIR    ${ROOT_DIR}/ext)
 set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
@@ -63,8 +63,9 @@ include_directories(${SRC_DIR})
 
 
 # Настройка опций сборки компонент
-OPTION(ENABLE_CTPP2   "Enable CTPP2 support [default: ON]"   ON)
-OPTION(ENABLE_TESTS   "Enable TESTS support [default: ON]"   ON)
+OPTION(ENABLE_TESTS "Enable TESTS support [default: ON]" ON)
+OPTION(ENABLE_CTPP2 "Enable CTPP2 support [default: ON]" ON)
+OPTION(ENABLE_CEF3  "Enable CEF3 support [default: ON]"  OFF)
 
 
 # Поиск библиотек Boost версии старше 1.48
@@ -99,9 +100,9 @@ if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     
     add_definitions(-DBOOST_DIN_LINK)
-else(Boost_FOUND)
+else()
     message(FATAL_ERROR "Boost libraries not found. Please get a copy from http://www.boost.org")
-endif(Boost_FOUND)
+endif()
 
 
 # Поиск дополнительных библиотек
@@ -116,6 +117,15 @@ add_subdirectory("${SRC_DIR}")
 set(LOG_LIBS z ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_IOSTREAMS_LIBRARY})
 
 if(ENABLE_TESTS)
+    # Поиск конкретного указанного теста, в противном случае будут добавлены все тесты
+    set(ALL_TESTS ON)
+    get_cmake_property(VARIABLE_NAMES VARIABLES)
+    foreach (VAR_NAME ${VARIABLE_NAMES})
+        if (VAR_NAME MATCHES "^TEST_(.*)")
+            set(ALL_TESTS OFF)
+        endif()
+    endforeach()
+
     set(TESTS_DIR ${SRC_DIR}/tests)
     message(STATUS "TESTS_DIR: ${TESTS_DIR}")
 
@@ -127,22 +137,71 @@ if(ENABLE_TESTS)
     add_subdirectory("${TESTS_DIR}")
 else(ENABLE_TESTS)
     message(STATUS "Directory tests is not included to build. Run cmake -DENABLE_TESTS=ON to include.")
-endif(ENABLE_TESTS)
+endif()
 
 if(ENABLE_CTPP2)
-    # Поиск конкретного указанного теста, в противном случае будут добавлены все тесты
-    set(ALL_TESTS ON)
-    get_cmake_property(VARIABLE_NAMES VARIABLES)
-    foreach (VAR_NAME ${VARIABLE_NAMES})
-        if (VAR_NAME MATCHES "^TEST_(.*)")
-            set(ALL_TESTS OFF)
-        endif()
-    endforeach()
-
-    set(HTTP_SERVER_DIR ${SRC_DIR}/http-server)
-    message(STATUS "Add dir: `${HTTP_SERVER_DIR}`")
     set(CTPP2_EXT_DIR "${EXT_DIR}/ctpp2")
-    take_component(CTPP2)
-    add_subdirectory("${HTTP_SERVER_DIR}")
-endif(ENABLE_CTPP2)
+	add_custom_target("build_ctpp2" ALL)
+	add_custom_command(
+		TARGET "build_ctpp2"
+		WORKING_DIRECTORY "${CTPP2_EXT_DIR}"
+		COMMAND "./build.sh"
+		DEPENDS "ctpp2-2.8.3"
+		)
 
+    set(HTTP_SERVER_DIR "${SRC_DIR}/http-server")
+    message(STATUS "Add dir: `${HTTP_SERVER_DIR}`")
+    set(CTPP2_EXT_LIBS_DIR "${CTPP2_EXT_DIR}/ctpp2-2.8.3/bld")
+	link_directories("${CTPP2_EXT_LIBS_DIR}")
+    message(STATUS "CTPP2 libraries dir: `${CTPP2_EXT_LIBS_DIR}`")
+    set(CTPP2_EXT_INCS_DIR "${CTPP2_EXT_DIR}/ctpp2-2.8.3/include")
+    include_directories("${CTPP2_EXT_INCS_DIR}")
+    message(STATUS "CTPP2 includes dir: `${CTPP2_EXT_INCS_DIR}`")
+
+    add_subdirectory("${HTTP_SERVER_DIR}")
+endif()
+
+if(ENABLE_CEF3)
+	find_library(
+		GTKGLEXT1-DEV_LIBRARIES 
+		NAMES "libgtkglext-x11-1.0.so" 
+		PATHS "/lib" "/opt/lib" "/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu"
+		DOC "Path where the `libgtkglext1-dev` libraries can be found"
+		)
+	  
+	if(NOT GTKGLEXT1-DEV_LIBRARIES)
+		message(FATAL_ERROR "ERROR: Cannot find `libgtkglext1-dev`, aborting")
+	endif()
+
+	find_library(
+		UDEV_LIBRARIES 
+		NAMES "libudev.so.0"
+		PATHS "/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu"
+		DOC "Path where the `libudev.so.0` libraries can be found"
+		)
+	  
+	if(NOT UDEV_LIBRARIES)
+		message(FATAL_ERROR "ERROR: Cannot find `libudev.so.0`, try: `LIBUDEV=$(find /usr -name libudev\.so); sudo ln -s $LIBUDEV $LIBUDEV.0`, aborting")
+	endif()
+
+    set(CEF3_EXT_DIR "${EXT_DIR}/cef3")
+	add_custom_target("build_cef3" ALL)
+	add_custom_command(
+		TARGET "build_cef3"
+		WORKING_DIRECTORY "${CEF3_EXT_DIR}"
+		COMMAND "./build.sh"
+		ARGS "${CMAKE_BUILD_TYPE}"
+		DEPENDS "cef_binary_3.1750.1738_linux64"
+		)
+
+    set(WEB_CLIENT_APP_DIR "${SRC_DIR}/web-client-app")
+    message(STATUS "Add dir: `${WEB_CLIENT_APP_DIR}`")
+    set(CEF3_EXT_LIBS_DIR "${CEF3_EXT_DIR}/cef_binary_3.1750.1738_linux64/out/${CMAKE_BUILD_TYPE}")
+	link_directories("${CEF3_EXT_LIBS_DIR}")
+    message(STATUS "CEF3 libraries dir: `${CEF3_EXT_LIBS_DIR}`")
+    set(CEF3_EXT_INCS_DIR "${CEF3_EXT_DIR}/cef_binary_3.1750.1738_linux64/include")
+    include_directories("${CEF3_EXT_INCS_DIR}")
+    message(STATUS "CEF3 includes dir: `${CEF3_EXT_INCS_DIR}`")
+
+    add_subdirectory("${WEB_CLIENT_APP_DIR}")
+endif()

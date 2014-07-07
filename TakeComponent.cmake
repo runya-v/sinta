@@ -22,27 +22,27 @@ macro(find_template)
             ${GET_COMPONENT_NAME}_INCLUDE_DIR 
             NAMES ${GET_INCLUDE_NAMES}
             PATHS "/opt/include" "/usr/include" "/usr/local/include"
-            DOC "Path where the CPPCMS header files can be found"
+            DOC "Path where the `${GET_INCLUDE_NAMES}` header files can be found"
             )
 
         if(${GET_COMPONENT_NAME}_INCLUDE_DIR)
             find_library(
                 ${GET_COMPONENT_NAME}_LIBRARIES 
                 NAMES ${GET_LIB_NAMES} 
-                PATHS "/lib" "/opt/lib" "/usr/lib" "/usr/local/lib"
-                DOC "Path where the CPPCMS libraries can be found"
+                PATHS "/lib" "/opt/lib" "/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu"
+                DOC "Path where the `${GET_LIB_NAMES}` libraries can be found"
                 )
               
             if(${GET_COMPONENT_NAME}_LIBRARIES)
                 set(${GET_COMPONENT_NAME}_FOUND TRUE)
                 message(STATUS "`${GET_COMPONENT_NAME}` hash function support enabled")
-            else(${GET_COMPONENT_NAME}_LIBRARIES)
+            else()
                 message(STATUS "ERROR: Cannot find `${GET_COMPONENT_NAME}`, aborting")
-            endif(${GET_COMPONENT_NAME}_LIBRARIES)
+            endif()
         elseif(${GET_COMPONENT_NAME}_INCLUDE_DIR)
             message(STATUS "ERROR: Cannot find `${GET_COMPONENT_NAME}`, aborting")
-        endif(${GET_COMPONENT_NAME}_INCLUDE_DIR)
-    endif(NOT ("${GET_COMPONENT_NAME}" STREQUAL ""))
+        endif()
+    endif()
 endmacro(find_template)
 
 
@@ -62,12 +62,12 @@ function(take_component COMPONENT)
             message(STATUS "    \"${LIB}\"")
         endforeach()
         link_directories(${${COMPONENT}_LIBRARIES})
-    else(${COMPONENT}_FOUND)
+    else()
 		if(NOT ("${${COMPONENT}_EXT_DIR}" STREQUAL ""))
 			message(STATUS "Try use extern: `${${COMPONENT}_EXT_DIR}`.")
 			add_subdirectory(${${COMPONENT}_EXT_DIR})
 		else()
 			message(FATAL_ERROR "ERROR: libraries not found. Please install a ${COMPONENT} library.")
 		endif()
-    endif(${COMPONENT}_FOUND)
+    endif()
 endfunction(take_component)
