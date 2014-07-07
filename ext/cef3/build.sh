@@ -6,8 +6,8 @@ if [[ $# != 1 ]]; then
 	exit 1
 fi
 
-if [[ ! -f $cef_binary_3.1750.1738_linux64.7z ]]; then 
-	echo "Archive `cef_binary_3.1750.1738_linux64.7z` is not find. Take library source from: `http://www.magpcss.net/cef_downloads/index.php?file=cef_binary_3.1750.1738_linux64.7z`"
+if [[ ! -f "cef_binary_3.1750.1738_linux64.7z" ]]; then 
+	echo "Archive for CEF3 is not find. Take library source from: \"http://www.magpcss.net/cef_downloads/index.php?file=cef_binary_3.1750.1738_linux64.7z\""
 	exit 1
 fi
 
