@@ -1,11 +1,10 @@
 /*!
  * \brief  ASIO сервер обслуживающий TCP соединения.
- * \author Rostislav Velichko.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
  * \date   02.03.2013
  */
 
 #pragma once
-
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>

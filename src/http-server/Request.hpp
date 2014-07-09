@@ -1,6 +1,6 @@
 /*!
  * \brief  Структура ответа клиенту.
- * \author Rostislav Velichko.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
  * \date   02.03.2013
  */
 

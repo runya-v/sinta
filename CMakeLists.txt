@@ -14,8 +14,7 @@ endif()
 
 # Общие флаги для всех сборок.
 add_definitions(
-    -std=gnu++11
-    -pedantic  -pedantic-errors
+    -pedantic -pedantic-errors
     -std=gnu++11
     -pipe -fPIC 
     -Wall -Wno-long-long -Wno-inline 
@@ -131,7 +130,7 @@ if(ENABLE_TESTS)
 
     enable_testing()
 
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${TESTS_DIR})
+    #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${TESTS_DIR})
     include(UTest)
 
     add_subdirectory("${TESTS_DIR}")
@@ -162,16 +161,11 @@ if(ENABLE_CTPP2)
 endif()
 
 if(ENABLE_CEF3)
-	find_library(
-		GTKGLEXT1-DEV_LIBRARIES 
-		NAMES "libgtkglext-x11-1.0.so" 
-		PATHS "/lib" "/opt/lib" "/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu"
-		DOC "Path where the `libgtkglext1-dev` libraries can be found"
-		)
-	  
-	if(NOT GTKGLEXT1-DEV_LIBRARIES)
-		message(FATAL_ERROR "ERROR: Cannot find `libgtkglext1-dev`, aborting")
-	endif()
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+	include_directories(${GTK3_INCLUDE_DIRS})
+	link_directories(${GTK3_LIBRARY_DIRS})
+	add_definitions(${GTK3_CFLAGS_OTHER})
 
 	find_library(
 		UDEV_LIBRARIES 
@@ -197,9 +191,10 @@ if(ENABLE_CEF3)
     set(WEB_CLIENT_APP_DIR "${SRC_DIR}/web-client-app")
     message(STATUS "Add dir: `${WEB_CLIENT_APP_DIR}`")
     set(CEF3_EXT_LIBS_DIR "${CEF3_EXT_DIR}/cef_binary_3.1750.1738_linux64/out/${CMAKE_BUILD_TYPE}")
-	link_directories("${CEF3_EXT_LIBS_DIR}")
+	link_directories("${CEF3_EXT_LIBS_DIR}" "${CEF3_EXT_LIBS_DIR}/obj.target")
     message(STATUS "CEF3 libraries dir: `${CEF3_EXT_LIBS_DIR}`")
-    set(CEF3_EXT_INCS_DIR "${CEF3_EXT_DIR}/cef_binary_3.1750.1738_linux64/include")
+    set(CEF3_EXT_INCS_DIR "${CEF3_EXT_DIR}/cef_binary_3.1750.1738_linux64")
+    set(CEF3_EXT_INCS_DIR "${CEF3_EXT_INCS_DIR}" "${CEF3_EXT_INCS_DIR}/include")
     include_directories("${CEF3_EXT_INCS_DIR}")
     message(STATUS "CEF3 includes dir: `${CEF3_EXT_INCS_DIR}`")
 

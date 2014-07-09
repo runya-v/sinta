@@ -1,10 +1,10 @@
 /*!
  * \brief  ASIO сервер обслуживающий TCP соединения.
- * \author Rostislav Velichko.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
  * \date   01.30.2013
  */
 
-# pragma once
+#pragma once
 
 #include <string>
 #include <vector>

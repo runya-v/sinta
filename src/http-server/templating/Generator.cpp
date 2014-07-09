@@ -1,9 +1,3 @@
-/*!
- * \brief  Генератор данных на основе скомпилированного шаблона и ресурсных данных.
- * \author Rostislav Velichko.
- * \date   05.11.2013
- */
-
 #include <boost/format.hpp>
 
 #include <ctpp2/CTPP2Parser.hpp>

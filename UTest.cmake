@@ -44,7 +44,7 @@ endfunction(add_boost_tests)
 function(add_unit_test EXECUTABLE EXTRA_ARGS)
     if(ALL_TESTS)
         set(TEST_${EXECUTABLE} 1)
-    endif(ALL_TESTS)
+    endif()
 
     if(TEST_${EXECUTABLE})
         # Определение требуемых библиотек.
@@ -61,5 +61,5 @@ function(add_unit_test EXECUTABLE EXTRA_ARGS)
 
         # Добавление теста из собранного бинарника в систему тестирования.
         add_boost_tests(${EXECUTABLE} "--catch_system_errors=no" ${EXECUTABLE}.cpp)
-    endif(TEST_${EXECUTABLE})
+    endif()
 endfunction(add_unit_test)

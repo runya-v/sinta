@@ -1,8 +1,10 @@
 /*!
  * \brief  Генератор данных на основе скомпилированного шаблона и ресурсных данных.
- * \author Rostislav Velichko.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
  * \date   05.11.2013
  */
+
+#pragma once
 
 #include <string>
 #include <memory>

@@ -1,3 +1,9 @@
+/*!
+ * \brief  Утилиты работы с файлами.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \date   05.11.2013
+ */
+
 #pragma once
 
 #include <stdio.h>
