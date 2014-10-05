@@ -28,6 +28,8 @@ namespace boost {
     template <>
     inline std::string lexical_cast<std::string, Log::Level>(const Log::Level& value) {
         switch (value) {
+            case TEST:
+               return "TEST";
             case INFO:
                return "INFO";
             case DEBUG:
@@ -52,9 +54,9 @@ static std::string logFileName(std::uint32_t i, bool z) {
     // Format: Mo, 15.06.2009 20:20:00
     strftime(buffer, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm);
 
-    boost::format f = boost::format("%s-%u.%s") 
-        % buffer 
-        % i 
+    boost::format f = boost::format("%s-%u.%s")
+        % buffer
+        % i
         % (z ? "zippedlog" : "log")
         ;
     return f.str();
@@ -91,7 +93,7 @@ void Log::init(bool log_out, bool log_out_file, bool log_file_compress, uint32_t
 
 void Log::execute() {
     while (true) {
-        QueueTask task; 
+        QueueTask task;
         {
             std::unique_lock<std::mutex> lock(_mutex);
 
@@ -157,9 +159,9 @@ void Log::close() {
     auto now = std::chrono::system_clock::now();
 
     for (
-        auto it = boost::filesystem::directory_iterator(boost::filesystem::path(".")); 
-        it not_eq boost::filesystem::directory_iterator(); 
-        ++it) 
+        auto it = boost::filesystem::directory_iterator(boost::filesystem::path("."));
+        it not_eq boost::filesystem::directory_iterator();
+        ++it)
     {
         if (not boost::filesystem::is_regular_file(it->status())) {
             continue;
@@ -245,7 +247,7 @@ void Log::stop() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-LogSequence::Head::Next::Next(const Next &next) 
+LogSequence::Head::Next::Next(const Next &next)
     : _stream(next._stream)
 {}
 
@@ -257,7 +259,7 @@ LogSequence::Head::Head(const Head &head)
 {}
 
 
-LogSequence::LogSequence(const Log::Level &level, const std::string &module) 
+LogSequence::LogSequence(const Log::Level &level, const std::string &module)
     : _level(level)
     , _module(module)
 {}

@@ -18,11 +18,12 @@
 
 namespace base {
     static const uint32_t LOG_FILE_DEPTH = 1024 * 1024;
-    
-    
+
+
     class Log {
     public:
         enum class Level {
+            _test,
             _info,
             _debug,
             _warning,
@@ -56,7 +57,7 @@ namespace base {
 
         ThreadPtr _thread;
         bool _is_run;
-        
+
         bool _log_out;
         bool _log_out_file;
         bool _log_file_compress;
@@ -76,15 +77,15 @@ namespace base {
         void start();
         void stop();
     };
-    
-    
+
+
     struct LogSequence {
         struct Head {
             struct Next {
                 std::stringstream *_stream;
 
                 template<class Type>
-                explicit Next(std::stringstream *stream, const Type &value) 
+                explicit Next(std::stringstream *stream, const Type &value)
                     : _stream(stream)
                 {
                     (*_stream) << value;
@@ -101,9 +102,9 @@ namespace base {
             std::shared_ptr<std::stringstream> _stream;
             Log::Level _level;
             std::string _module;
-          
+
             template<class Type>
-            explicit Head(const Log::Level &level, const std::string& module, const Type &value) 
+            explicit Head(const Log::Level &level, const std::string& module, const Type &value)
                 : _stream(new std::stringstream)
                 , _level(level)
                 , _module(module)
@@ -112,7 +113,7 @@ namespace base {
             }
 
             Head(const Head &head);
-            
+
             ~Head() {
                 base::Singleton<base::Log>::getInstance()->print(_level, _module, _stream->str().c_str());
             }
@@ -122,7 +123,7 @@ namespace base {
                 return Next(_stream.get(), value);
             }
         };
-        
+
         Log::Level _level;
         std::string _module;
 
@@ -135,18 +136,17 @@ namespace base {
     };
 } // namespace base
 
+#define METHOD (__FUNC__)
+#define MODULE typeid(*this).name()
 
 #define LOG_TO_STDOUT base::Singleton<base::Log>::getInstance()->init(true, false);
 
-#define LOGM(level, method) base::LogSequence XAFTERX(log_, __LINE__)((level), (method)); XAFTERX(log_, __LINE__)
-#define LOG(level) LOGM((level), __FUNC__)
+#define LOGM(level, method) base::LogSequence XAFTERX(log_, __LINE__)((level), (method)); XAFTERX(log_, __LINE__) << ""
+#define LOG(level) LOGM((level), METHOD)
 
+#define TEST    base::Log::Level::_test
 #define INFO    base::Log::Level::_info
 #define DEBUG   base::Log::Level::_debug
 #define WARNING base::Log::Level::_warning
 #define ERROR   base::Log::Level::_error
 #define FATAL   base::Log::Level::_fatal
-
-#define METHOD (__FUNC__)
-
-#define MODULE typeid(*this).name()
