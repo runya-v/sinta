@@ -19,7 +19,7 @@ namespace webv {
         , public CefLifeSpanHandler
         , public CefLoadHandler
 	{
-		IMPLEMENT_REFCOUNTING(WebViewHandler)
+		IMPLEMENT_REFCOUNTING(WebViewHandler);
 
 		typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
 		

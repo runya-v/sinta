@@ -15,7 +15,7 @@ namespace webv {
 		: public CefApp
         , public CefBrowserProcessHandler 
     {
-		IMPLEMENT_REFCOUNTING(WebView)
+		IMPLEMENT_REFCOUNTING(WebView);
 		
 	public:
 		WebView();

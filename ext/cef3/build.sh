@@ -20,7 +20,14 @@ fi
 
 pushd $SRC_NAME
 echo "build $1 for $SRC_NAME."
-./build.sh $1
+
+if [[ ! -d "bld" ]]; then
+	mkdir bld
+fi
+pushd bld
+cmake -DCMAKE_BUILD_TYPE=$1 ..
+make -j$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
+popd
 popd
 
 exit 0
