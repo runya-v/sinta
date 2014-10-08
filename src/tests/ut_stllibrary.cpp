@@ -16,123 +16,191 @@
 #include <list>
 #include <map>
 #include <set>
-#include <multimap>
-#include <multiset>
-#include <unordered_map>
-#include <unordered_set>
-#include <unordered_multimap>
-#include <unordered_multiset>
 #include <stack>
 #include <queue>
-#include <priority_queue>
 
 #include "Log.hpp"
 
 class Container {
+public:
+    Container() {
+        LOG(TEST);
+    }
 };
 
 
 class SequancedContainer
-	: public Container
-{};
+    : public Container
+{
+public:
+    SequancedContainer() {
+        LOG(TEST);
+    }
+};
 
 
-class AssociativeContainer 
-	: public Container
-{};
+class AssociativeContainer
+    : public Container
+{
+public:
+    AssociativeContainer() {
+        LOG(TEST);
+    }
+};
 
 
 class UnorderedAssociativeContainer
-	: public Container
-{};
+    : public Container
+{
+public:
+    UnorderedAssociativeContainer() {
+        LOG(TEST);
+    }
+};
 
 
 class AdaptorContainer
-	: public Container
-{};
+    : public Container
+{
+public:
+    AdaptorContainer() {
+        LOG(TEST);
+    }
+};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 class Array
-	: public SequancedContainer
-{};
+    : public SequancedContainer
+{
+public:
+    Array() {
+        LOG(TEST) << "Access Complexitive: O(1)";
+        LOG(TEST) << "Constructor use aggregate initialization.";
+
+        std::array<int, 3> a1{ {2, 3, 1} };
+        std::stringstream ss;
+        for(auto &s : a1) {
+            ss << s << ',';
+        }
+        LOG(TEST) << "std::array<int, 3> a1: " << ss.str();
+
+        std::array<std::string, 3> a3 = { {std::string("a"), "b", "c"} };
+        ss.str("");
+        for(auto &s : a3) {
+            ss << s << ',';
+        }
+        LOG(TEST) << "std::array<std::string, 3> a3: " << ss.str();
+
+        LOG(TEST) << "Support generalised algorithms";
+        std::sort(a1.begin(), a1.end());
+        ss.str("");
+        for(auto &s : a1) {
+            ss << s << ',';
+        }
+        LOG(TEST) << "std::array<int, 3> a1 (sort): " << ss.str();
+
+        std::array<int, 3> a2 = {1, 2, 3};
+        ss.str("");
+        std::reverse_copy(a2.begin(), a2.end(), std::ostream_iterator<int>(ss, ","));
+        LOG(TEST) << "std::array<int, 3> a2 (reverse_copy): " << ss.str();
+    }
+};
 
 
 class Vector
-	: public SequancedContainer
-{};
+    : public SequancedContainer
+{
+public:
+    Vector() {
+        LOG(TEST) << "Free access by index Complexitive: O(1)";
+        LOG(TEST) << "Insert/Delete to end Complexitive: O(1)";
+        LOG(TEST) << "Insert/Delete Complexitive: O(n)";
+        LOG(TEST) << "Find Complexitive: O(n)";
+        LOG(TEST) << "Find sorted Complexitive: O(ln(n))";
+    }
+};
 
 
 class Deque
-	: public SequancedContainer
-{};
+    : public SequancedContainer
+{
+public:
+    Deque() {
+        LOG(TEST) << "Free access by index Complexitive: O(1)";
+        LOG(TEST) << "Insert/Delete to end & to begin Complexitive: O(1)";
+        LOG(TEST) << "Insert/Delete Complexitive: O(n)";
+        LOG(TEST) << "Insert/Delete doesn`t crashed saved iterators";
+
+    }
+};
 
 
 class ForwardList
-	: public SequancedContainer
+    : public SequancedContainer
 {};
 
 
 class List
-	: public SequancedContainer
+    : public SequancedContainer
 {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 class Map
-	: public AssociativeContainer
+    : public AssociativeContainer
 {};
 
 
 class Set
-	: public AssociativeContainer
+    : public AssociativeContainer
 {};
 
 
 class MultiMap
-	: public AssociativeContainer
+    : public AssociativeContainer
 {};
 
 
 class MultiSet
-	: public AssociativeContainer
+    : public AssociativeContainer
 {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 class UnorderedMap
-	: public UnorderedAssociativeContainer
+    : public UnorderedAssociativeContainer
 {};
 
 
 class UnorderedSet
-	: public UnorderedAssociativeContainer
+    : public UnorderedAssociativeContainer
 {};
 
 
 class UnorderedMultimap
-	: public UnorderedAssociativeContainer
+    : public UnorderedAssociativeContainer
 {};
 
 
 class UnorderedMultiset
-	: public UnorderedAssociativeContainer
+    : public UnorderedAssociativeContainer
 {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 class Stack
-	: public AdaptorContainer
+    : public AdaptorContainer
 {};
 
 
 class Queue
-	: public AdaptorContainer
+    : public AdaptorContainer
 {};
 
 
 class PriorityQueue
-	: public AdaptorContainer
+    : public AdaptorContainer
 {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -140,6 +208,7 @@ class PriorityQueue
 
 BOOST_AUTO_TEST_CASE(TestStlContainers) {
     LOG_TO_STDOUT;
+    Array();
 }
 
 
