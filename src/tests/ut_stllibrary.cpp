@@ -131,6 +131,7 @@ public:
         LOG(TEST) << "Insert/Delete to end & to begin Complexitive: O(1)";
         LOG(TEST) << "Insert/Delete Complexitive: O(n)";
         LOG(TEST) << "Insert/Delete doesn`t crashed saved iterators";
+        LOG(TEST) << "Insert/Delete doesn`t crashed saved iterators";
 
     }
 };
