@@ -30,9 +30,9 @@ function(add_boost_tests EXECUTABLE EXTRA_ARGS)
     endforeach()
 
     string(REGEX REPLACE "\\|\\|" ")" REGEX_${EXECUTABLE} ${REGEX_${EXECUTABLE}})
-    message(STATUS "Add test target:    test_${EXECUTABLE}:     ${REGEX_${EXECUTABLE}}")
-
-    add_custom_target(test_${EXECUTABLE} COMMAND ctest --force-new-ctest-process -R \"${REGEX_${EXECUTABLE}}\")
+    string(REGEX REPLACE "ut_" "" TEST_TARGET ${EXECUTABLE})
+    message(STATUS "Add test target:    ${TEST_TARGET}:     ${REGEX_${EXECUTABLE}}")
+    add_custom_target(${TEST_TARGET} COMMAND ctest --force-new-ctest-process -R \"${REGEX_${EXECUTABLE}}\")
 endfunction(add_boost_tests)
 
 
@@ -42,18 +42,21 @@ endfunction(add_boost_tests)
 #   EXECUTABLE -- имя теста.
 #   EXTRA_ARGS -- списко зависимостей.
 function(add_unit_test EXECUTABLE EXTRA_ARGS)
+    message(STATUS "Test candidate: `${EXECUTABLE}`")
+
     if(ALL_TESTS)
-        set(TEST_${EXECUTABLE} 1)
+        set(${EXECUTABLE} ON)
     endif()
 
-    if(TEST_${EXECUTABLE})
+    if(${EXECUTABLE})
+        message(STATUS "Activate test: `${EXECUTABLE}`")
         # Определение требуемых библиотек.
         set(LIBRARYES ${EXTRA_ARGS})
 
         foreach(LIB ${ARGN})
             set(LIBRARYES ${LIBRARYES} ${LIB})
         endforeach()
-        set(LIBRARYES ${LIBRARYES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+        set(LIBRARYES ${LIBRARYES} boost_unit_test_framework)
 
         # Создание правила для сборки теста.
         add_executable(${EXECUTABLE} ${EXECUTABLE}.cpp)
