@@ -205,19 +205,6 @@ class PriorityQueue
 {};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//class Example_1 {
-//public:
-//    Example_1() {
-//        LOG(TEST);
-//        std::map<int, std::string> m;
-//        m.insert(std::make_pair(13, "test str"));
-//        auto it = m.find(13);
-//        if (it != m.end()) {
-//            LOG(TEST) << "[" << it->first << ";" << it->second << "]";
-//        }
-//    }
-//};
-
 
 BOOST_AUTO_TEST_CASE(TestStlContainers) {
     LOG_TO_STDOUT;

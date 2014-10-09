@@ -9,4 +9,5 @@ add_library(${BASE_LIB}
 
 add_library("chart"
     Chart.cpp
+    Demangle.cpp
     )

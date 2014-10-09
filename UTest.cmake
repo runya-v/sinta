@@ -30,7 +30,7 @@ function(add_boost_tests EXECUTABLE EXTRA_ARGS)
     endforeach()
 
     string(REGEX REPLACE "\\|\\|" ")" REGEX_${EXECUTABLE} ${REGEX_${EXECUTABLE}})
-    string(REGEX REPLACE "ut_" "" TEST_TARGET ${EXECUTABLE})
+    string(REGEX REPLACE "ut_" "test_" TEST_TARGET ${EXECUTABLE})
     message(STATUS "Add test target:    ${TEST_TARGET}:     ${REGEX_${EXECUTABLE}}")
     add_custom_target(${TEST_TARGET} COMMAND ctest --force-new-ctest-process -R \"${REGEX_${EXECUTABLE}}\")
 endfunction(add_boost_tests)
