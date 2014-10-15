@@ -15,81 +15,73 @@
 #include "Chart.hpp"
 #include "Demangle.hpp"
 
-// chrono typedefs
 
-using std::chrono::milliseconds;
-using std::chrono::microseconds;
+namespace mlsecs = std::chrono::milliseconds;
+namespace mcsecs = std::chrono::microseconds;
+namespace clock = std::chrono::high_resolution_clock;
 
-using Clock = std::chrono::high_resolution_clock;
 
 // Number of repetitions of each test
-
 static const std::size_t REPEAT = 7;
 
+
 // variadic policy runner
-
-
 template<class Container>
-inline static void run(Container &, std::size_t){
+inline static void run(Container &, std::size_t) {
     //End of recursion
 }
 
 
 template<template<class> class Test, template<class> class ...Rest, class Container>
-inline static void run(Container &container, std::size_t size){
+inline static void run(Container &container, std::size_t size) {
     Test<Container>::run(container, size);
     run<Rest...>(container, size);
 }
 
-// benchmarking procedure
 
+// benchmarking procedure
 template<typename Container,
          typename DurationUnit,
          template<class> class CreatePolicy,
          template<class> class ...TestPolicy>
-void bench(const std::string& type, const std::initializer_list<int> &sizes){
+void bench(const std::string& type, const std::initializer_list<int> &sizes) {
     // create an element to copy so the temporary creation
     // and initialization will not be accounted in a benchmark
-    for(auto size : sizes) {
-        Clock::duration duration;
+    for (auto size : sizes) {
+        clock::duration duration;
 
-        for(std::size_t i=0; i<REPEAT; ++i) {
+        for (std::size_t i = 0; i < REPEAT; ++i) {
             auto container = CreatePolicy<Container>::make(size);
-
-            Clock::time_point t0 = Clock::now();
-
+            clock::time_point t0 = clock::now();
             run<TestPolicy...>(container, size);
-
-            Clock::time_point t1 = Clock::now();
+            clock::time_point t1 = clock::now();
             duration += t1 - t0;
         }
-
         graphs::new_result(type, std::to_string(size), std::chrono::duration_cast<DurationUnit>(duration).count() / REPEAT);
     }
-
     CreatePolicy<Container>::clean();
 }
 
 
 template<template<class> class Benchmark>
-void bench_types(){
+void bench_types() {
     //Recursion end
 }
 
 
 template<template<class> class Benchmark, typename T, typename ...Types>
-void bench_types(){
+void bench_types() {
     Benchmark<T>::run();
     bench_types<Benchmark, Types...>();
 }
 
 
-bool is_tag(int c){
+bool is_tag(int c) {
     return std::isalnum(c) || c == '_';
 }
 
 
-std::string tag(std::string name){
+std::string tag(std::string name) {
     std::replace_if(begin(name), end(name), [](char c){ return !is_tag(c); }, '_');
     std::string res;
     res.swap(name);
@@ -98,7 +90,7 @@ std::string tag(std::string name){
 
 
 template<typename T>
-void new_graph(const std::string &testName, const std::string &unit){
+void new_graph(const std::string &testName, const std::string &unit) {
     std::string title(testName + " - " + demangle(typeid(T).name()));
     graphs::new_graph(tag(title), title, unit);
 }
@@ -113,43 +105,43 @@ constexpr bool is_trivial_of_size(std::size_t size) {
 template<typename T>
 constexpr bool is_non_trivial_of_size(std::size_t size) {
     return
-            !std::is_trivial<T>::value
-        &&  sizeof(T) == size
-        &&  std::is_copy_constructible<T>::value
-        &&  std::is_copy_assignable<T>::value
-        &&  std::is_move_constructible<T>::value
-        &&  std::is_move_assignable<T>::value;
+        not std::is_trivial<T>::value &&
+        sizeof(T) == size &&
+        std::is_copy_constructible<T>::value &&
+        std::is_copy_assignable<T>::value &&
+        std::is_move_constructible<T>::value &&
+        std::is_move_assignable<T>::value;
 }
 
 
 template<typename T>
 constexpr bool is_non_trivial_nothrow_movable() {
     return
-            !std::is_trivial<T>::value
-        &&  std::is_nothrow_move_constructible<T>::value
-        &&  std::is_nothrow_move_assignable<T>::value;
+        not std::is_trivial<T>::value &&
+        std::is_nothrow_move_constructible<T>::value &&
+        std::is_nothrow_move_assignable<T>::value;
 }
 
 
 template<typename T>
 constexpr bool is_non_trivial_non_nothrow_movable() {
     return
-            !std::is_trivial<T>::value
-        &&  std::is_move_constructible<T>::value
-        &&  std::is_move_assignable<T>::value
-        &&  !std::is_nothrow_move_constructible<T>::value
-        &&  !std::is_nothrow_move_assignable<T>::value;
+        not std::is_trivial<T>::value &&
+        std::is_move_constructible<T>::value &&
+        std::is_move_assignable<T>::value &&
+        not std::is_nothrow_move_constructible<T>::value &&
+        not std::is_nothrow_move_assignable<T>::value;
 }
 
 
 template<typename T>
 constexpr bool is_non_trivial_non_movable() {
     return
-            !std::is_trivial<T>::value
-        &&  std::is_copy_constructible<T>::value
-        &&  std::is_copy_assignable<T>::value
-        &&  !std::is_move_constructible<T>::value
-        &&  !std::is_move_assignable<T>::value;
+        not std::is_trivial<T>::value &&
+        std::is_copy_constructible<T>::value &&
+        std::is_copy_assignable<T>::value &&
+        not std::is_move_constructible<T>::value &&
+        not std::is_move_assignable<T>::value;
 }
 
 
@@ -166,67 +158,93 @@ template<int N>
 struct Trivial {
     std::size_t a;
     std::array<unsigned char, N-sizeof(a)> b;
-    bool operator<(const Trivial &other) const { return a < other.a; }
+    bool operator<(const Trivial &other) const {
+        return a < other.a;
+    }
 };
 
 
 template<>
 struct Trivial<sizeof(std::size_t)> {
     std::size_t a;
-    bool operator<(const Trivial &other) const { return a < other.a; }
+    bool operator<(const Trivial &other) const {
+        return a < other.a;
+    }
 };
 
 
 // non trivial, quite expensive to copy but easy to move (noexcept not set)
 class NonTrivialStringMovable {
-    private:
-        std::string data{"some pretty long string to make sure it is not optimized with SSO"};
+private:
+    std::string data{"some pretty long string to make sure it is not optimized with SSO"};
 
-    public:
-        std::size_t a{0};
-        NonTrivialStringMovable() = default;
-        NonTrivialStringMovable(std::size_t a): a(a) {}
-        ~NonTrivialStringMovable() = default;
-        bool operator<(const NonTrivialStringMovable &other) const { return a < other.a; }
+public:
+    std::size_t _a{0};
+
+    NonTrivialStringMovable(std::size_t a):
+        _a(a)
+    {}
+
+    NonTrivialStringMovable() = default;
+    ~NonTrivialStringMovable() = default;
+
+    bool operator<(const NonTrivialStringMovable &other) const {
+        return a < other.a;
+    }
 };
 
 
 // non trivial, quite expensive to copy but easy to move (with noexcept)
 class NonTrivialStringMovableNoExcept {
-    private:
-        std::string data{"some pretty long string to make sure it is not optimized with SSO"};
+private:
+    std::string data{"some pretty long string to make sure it is not optimized with SSO"};
 
-    public:
-        std::size_t a{0};
-        NonTrivialStringMovableNoExcept() = default;
-        NonTrivialStringMovableNoExcept(std::size_t a): a(a) {}
-        NonTrivialStringMovableNoExcept(const NonTrivialStringMovableNoExcept &) = default;
-        NonTrivialStringMovableNoExcept(NonTrivialStringMovableNoExcept &&) noexcept = default;
-        ~NonTrivialStringMovableNoExcept() = default;
-        NonTrivialStringMovableNoExcept &operator=(const NonTrivialStringMovableNoExcept &) = default;
-        NonTrivialStringMovableNoExcept &operator=(NonTrivialStringMovableNoExcept &&other) noexcept {
-            std::swap(data, other.data);
-            std::swap(a, other.a);
-            return *this;
-        }
-        bool operator<(const NonTrivialStringMovableNoExcept &other) const { return a < other.a; }
+public:
+    std::size_t a{0};
+
+    NonTrivialStringMovableNoExcept(std::size_t a):
+        a(a)
+    {}
+
+    NonTrivialStringMovableNoExcept(const NonTrivialStringMovableNoExcept &) = default;
+    NonTrivialStringMovableNoExcept(NonTrivialStringMovableNoExcept &&) noexcept = default;
+    NonTrivialStringMovableNoExcept() = default;
+    ~NonTrivialStringMovableNoExcept() = default;
+
+    NonTrivialStringMovableNoExcept &operator= (const NonTrivialStringMovableNoExcept &) = default;
+
+    NonTrivialStringMovableNoExcept &operator= (NonTrivialStringMovableNoExcept &&other) noexcept {
+        std::swap(data, other.data);
+        std::swap(a, other.a);
+        return *this;
+    }
+
+    bool operator< (const NonTrivialStringMovableNoExcept &other) const {
+        return a < other.a;
+    }
 };
 
 
 // non trivial, quite expensive to copy and move
 template<int N>
 class NonTrivialArray {
-    public:
-        std::size_t a = 0;
+public:
+    std::size_t a = 0;
 
-    private:
-        std::array<unsigned char, N-sizeof(a)> b;
+private:
+    std::array<unsigned char, N-sizeof(a)> b;
 
-    public:
-        NonTrivialArray() = default;
-        NonTrivialArray(std::size_t a): a(a) {}
-        ~NonTrivialArray() = default;
-        bool operator<(const NonTrivialArray &other) const { return a < other.a; }
+public:
+    NonTrivialArray(std::size_t a)
+        : a(a)
+    {}
+
+    NonTrivialArray() = default;
+    ~NonTrivialArray() = default;
+
+    bool operator<(const NonTrivialArray &other) const {
+        return a < other.a;
+    }
 };
 
 
@@ -241,11 +259,10 @@ using NonTrivialArrayMedium = NonTrivialArray<32>;
 
 // Define all benchmarks
 template<typename T>
-struct bench_fill_back {
-    static void run(){
+struct BenchFillBack {
+    static void run() {
         new_graph<T>("fill_back", "us");
-
-        auto sizes = { 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000 };
+        auto sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
         bench<std::vector<T>, microseconds, Empty, FillBack>("vector", sizes);
         bench<std::list<T>,   microseconds, Empty, FillBack>("list",   sizes);
         bench<std::deque<T>,  microseconds, Empty, FillBack>("deque",  sizes);
@@ -256,57 +273,55 @@ struct bench_fill_back {
     }
 };
 
-template<typename T>
-struct bench_emplace_back {
-    static void run(){
-        new_graph<T>("emplace_back", "us");
 
-        auto sizes = { 100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000 };
+template<typename T>
+struct BenchEmplaceBack {
+    static void run() {
+        new_graph<T>("emplace_back", "us");
+        auto sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
         bench<std::vector<T>, microseconds, Empty, EmplaceBack>("vector", sizes);
         bench<std::list<T>,   microseconds, Empty, EmplaceBack>("list",   sizes);
         bench<std::deque<T>,  microseconds, Empty, EmplaceBack>("deque",  sizes);
     }
 };
 
-template<typename T>
-struct bench_fill_front {
-    static void run(){
-        new_graph<T>("fill_front", "us");
 
-        auto sizes = { 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000 };
+template<typename T>
+struct BenchFillFront {
+    static void run() {
+        new_graph<T>("fill_front", "us");
+        auto sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
 
         // it is too slow with bigger data types
-        if(is_small<T>()){
+        if(is_small<T>()) {
             bench<std::vector<T>, microseconds, Empty, FillFront>("vector", sizes);
         }
-
         bench<std::list<T>,   microseconds, Empty, FillFront>("list",   sizes);
         bench<std::deque<T>,  microseconds, Empty, FillFront>("deque",  sizes);
     }
 };
 
-template<typename T>
-struct bench_emplace_front {
-    static void run(){
-        new_graph<T>("emplace_front", "us");
 
-        auto sizes = { 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000 };
+template<typename T>
+struct BenchEmplaceFront {
+    static void run() {
+        new_graph<T>("emplace_front", "us");
+        auto sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
 
         // it is too slow with bigger data types
-        if(is_small<T>()){
+        if(is_small<T>()) {
             bench<std::vector<T>, microseconds, Empty, EmplaceFront>("vector", sizes);
         }
-
         bench<std::list<T>,   microseconds, Empty, EmplaceFront>("list",   sizes);
         bench<std::deque<T>,  microseconds, Empty, EmplaceFront>("deque",  sizes);
     }
 };
 
-template<typename T>
-struct bench_linear_search {
-    static void run(){
-        new_graph<T>("linear_search", "us");
 
+template<typename T>
+struct BenchLinearSearch {
+    static void run() {
+        new_graph<T>("linear_search", "us");
         auto sizes = {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
         bench<std::vector<T>, microseconds, FilledRandom, Find>("vector", sizes);
         bench<std::list<T>,   microseconds, FilledRandom, Find>("list",   sizes);
@@ -314,11 +329,11 @@ struct bench_linear_search {
     }
 };
 
-template<typename T>
-struct bench_random_insert {
-    static void run(){
-        new_graph<T>("random_insert", "ms");
 
+template<typename T>
+struct BenchRandomInsert {
+    static void run() {
+        new_graph<T>("random_insert", "ms");
         auto sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
         bench<std::vector<T>, milliseconds, FilledRandom, Insert>("vector", sizes);
         bench<std::list<T>,   milliseconds, FilledRandom, Insert>("list",   sizes);
@@ -326,11 +341,11 @@ struct bench_random_insert {
     }
 };
 
-template<typename T>
-struct bench_random_remove {
-    static void run(){
-        new_graph<T>("random_remove", "ms");
 
+template<typename T>
+struct BenchRandomRemove {
+    static void run() {
+        new_graph<T>("random_remove", "ms");
         auto sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
         bench<std::vector<T>, milliseconds, FilledRandom, Erase>("vector", sizes);
         bench<std::list<T>,   milliseconds, FilledRandom, Erase>("list",   sizes);
@@ -340,10 +355,9 @@ struct bench_random_remove {
 };
 
 template<typename T>
-struct bench_sort {
-    static void run(){
+struct BenchSort {
+    static void run() {
         new_graph<T>("sort", "ms");
-
         auto sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
         bench<std::vector<T>, milliseconds, FilledRandom, Sort>("vector", sizes);
         bench<std::list<T>,   milliseconds, FilledRandom, Sort>("list",   sizes);
@@ -351,11 +365,11 @@ struct bench_sort {
     }
 };
 
-template<typename T>
-struct bench_destruction {
-    static void run(){
-        new_graph<T>("destruction", "us");
 
+template<typename T>
+struct BenchDestruction {
+    static void run() {
+        new_graph<T>("destruction", "us");
         auto sizes = {100000, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000};
         bench<std::vector<T>, microseconds, SmartFilled, SmartDelete>("vector", sizes);
         bench<std::list<T>,   microseconds, SmartFilled, SmartDelete>("list",   sizes);
@@ -363,11 +377,11 @@ struct bench_destruction {
     }
 };
 
-template<typename T>
-struct bench_number_crunching {
-    static void run(){
-        new_graph<T>("number_crunching", "ms");
 
+template<typename T>
+struct BenchNumberCrunching {
+    static void run() {
+        new_graph<T>("number_crunching", "ms");
         auto sizes = {10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000};
         bench<std::vector<T>, milliseconds, Empty, RandomSortedInsert>("vector", sizes);
         bench<std::list<T>,   milliseconds, Empty, RandomSortedInsert>("list",   sizes);
@@ -375,19 +389,19 @@ struct bench_number_crunching {
     }
 };
 
-//Launch the benchmark
 
+//Launch the benchmark
 template<typename ...Types>
-void bench_all(){
-    bench_types<bench_fill_back,        Types...>();
-    bench_types<bench_emplace_back,     Types...>();
-    bench_types<bench_fill_front,       Types...>();
-    bench_types<bench_emplace_front,    Types...>();
-    bench_types<bench_linear_search,    Types...>();
-    bench_types<bench_random_insert,    Types...>();
-    bench_types<bench_random_remove,    Types...>();
-    bench_types<bench_sort,             Types...>();
-    bench_types<bench_destruction,      Types...>();
+void bench_all() {
+    bench_types<bench_fill_back,     Types...>();
+    bench_types<bench_emplace_back,  Types...>();
+    bench_types<bench_fill_front,    Types...>();
+    bench_types<bench_emplace_front, Types...>();
+    bench_types<bench_linear_search, Types...>();
+    bench_types<bench_random_insert, Types...>();
+    bench_types<bench_random_remove, Types...>();
+    bench_types<bench_sort,          Types...>();
+    bench_types<bench_destruction,   Types...>();
 
     // it is really slow so run only for limited set of data
     bench_types<bench_number_crunching, TrivialSmall, TrivialMedium>();
