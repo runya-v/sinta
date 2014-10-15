@@ -19,7 +19,38 @@
 #include <stack>
 #include <queue>
 
+//#include "Bench.hpp"
+#include "Chart.hpp"
+#include "Demangle.hpp"
 #include "Log.hpp"
+
+
+// create
+// 
+
+
+// benchmarking procedure
+template<
+	class Container, 
+	class DurationUnit, 
+	template<class> class CreatePolicy, 
+	template<class> class ...TestPolicy>
+void bench(const std::string& type, const std::initializer_list<int> &sizes) {
+	for (auto size : sizes) {
+		Clock::duration duration;
+
+		for (std::size_t i = 0; i < REPEAT_EACH_TEST; ++i) {
+			auto container = CreatePolicy<Container>::make(size);
+			Clock::time_point tp_start = Clock::now();
+			run<TestPolicy...>(container, size);
+			Clock::time_point tp_stop = Clock::now();
+			duration += tp_stop - tp_start;
+		}
+		_chart->newResult(type, std::to_string(size), ch::duration_cast<DurationUnit>(duration).count() / REPEAT_EACH_TEST);
+	}
+	CreatePolicy<Container>::clean();
+}
+
 
 class Container {
 public:
@@ -50,7 +81,7 @@ public:
 
 
 class UnorderedAssociativeContainer
-    : public Container
+    : public AssociativeContainer
 {
 public:
     UnorderedAssociativeContainer() {
@@ -59,9 +90,12 @@ public:
 };
 
 
+template<class C>
 class AdaptorContainer
     : public Container
 {
+	C _container;
+	
 public:
     AdaptorContainer() {
         LOG(TEST);
@@ -219,17 +253,43 @@ class PriorityQueue
 //};
 
 
-BOOST_AUTO_TEST_CASE(TestStlContainers) {
+class BenchTest {
+public:
+	BenchTest() {
+		//Launch all the graphs
+		Bench<
+			TrivialSmall,
+			TrivialMedium,
+			TrivialLarge,
+			TrivialHuge,
+			TrivialMonster,
+			NonTrivialStringMovable,
+			NonTrivialStringMovableNoExcept,
+			NonTrivialArray<32>>
+		("charts.html");
+
+		//Generate the graphs
+		graphs::output(graphs::Output::GOOGLE);
+	}
+};
+
+
+BOOST_AUTO_TEST_CASE(TestBench) {
     LOG_TO_STDOUT;
-    Array();
+    BenchTest();
 }
 
-
-BOOST_AUTO_TEST_CASE(TestStlPtrs) {
-    LOG_TO_STDOUT;
-}
-
-
-BOOST_AUTO_TEST_CASE(TestStlAlgorithms) {
-    LOG_TO_STDOUT;
-}
+//BOOST_AUTO_TEST_CASE(TestStlContainers) {
+//    LOG_TO_STDOUT;
+//    Array();
+//}
+//
+//
+//BOOST_AUTO_TEST_CASE(TestStlPtrs) {
+//    LOG_TO_STDOUT;
+//}
+//
+//
+//BOOST_AUTO_TEST_CASE(TestStlAlgorithms) {
+//    LOG_TO_STDOUT;
+//}

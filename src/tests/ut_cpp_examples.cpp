@@ -250,51 +250,52 @@ public:
 
 
 class Example_10 {
-    class Xc {
+    class A {
     public:
-        Xc(int)
+        A(int)
         {
             LOG(TEST);
         }
     };
 
-    class Yc {
+    class B {
     public:
-        Yc(Xc)
+        B(A)
         {
             LOG(TEST);
         }
     };
 
-    class Zc {
+    class C {
     public:
-        Zc()
+        C()
         {
             LOG(TEST);
         }
 
-        Zc(Xc)
+        C(A)
         {
             LOG(TEST);
         }
 
-        operator Yc()
+        operator B()
         {
             LOG(TEST);
+            return B(A(10));
         }
     };
 
-    void f(Xc)
+    void f(A)
     {
         LOG(TEST);
     }
 
-    void g(Yc)
+    void g(B)
     {
         LOG(TEST);
     }
 
-    void h(Zc)
+    void h(C)
     {
         LOG(TEST);
     }
@@ -302,9 +303,9 @@ class Example_10 {
 public:
     Example_10() {
         f(10); // Xc(int)
-        g(Zc()); // Zc() -> operator Yc()
-        g(Zc(10)); // Zc(int -> Xc(int)) -> operator Yc()
-        h(Xc(10)); // Xc(int) -> Zc(Xc)
+        g(C()); // C() -> operator B()
+        g(C(10)); // C(int -> A(int)) -> operator B()
+        h(A(10)); // A(int) -> C(Xc)
         // g(10); error // int
         // h(10); error // int
     }

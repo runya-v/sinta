@@ -1,8 +1,5 @@
 #include <boost/intrusive/list.hpp>
 
-// create policies
-
-//Create empty container
 
 template<class Container>
 struct Empty {
@@ -13,7 +10,6 @@ struct Empty {
 };
 
 
-//Prepare data for fill back
 template<class Container>
 struct EmptyPrepareBackup {
     static std::vector<typename Container::value_type> v;
@@ -26,7 +22,6 @@ struct EmptyPrepareBackup {
                 v.push_back({i});
             }
         }
-
         return Container();
     }
 
@@ -55,7 +50,6 @@ struct FilledRandom {
     static std::vector<typename Container::value_type> v;
 
     inline static Container make(std::size_t size) {
-        // prepare randomized data that will have all the integers from the range
         if (v.size() != size) {
             v.clear();
             v.reserve(size);
@@ -65,12 +59,10 @@ struct FilledRandom {
             std::shuffle(begin(v), end(v), std::mt19937());
         }
 
-        // fill with randomized data
         Container container;
         for (std::size_t i = 0; i < size; ++i) {
             container.push_back(v[i]);
         }
-
         return container;
     }
 
@@ -278,11 +270,11 @@ std::array<typename Container::value_type, 1000> Insert<Container>::values
 
 template<class Container>
 struct Write {
-    inline static void run(Container &ctnr, std::size_t) {
+    inline static void run(Container &c, std::size_t) {
         auto it = std::begin(c);
         auto end = std::end(c);
-        for (auto c : ctnr) {
-            ++c.a;
+        for (auto val : c) {
+            ++val.a;
         }
     }
 };
