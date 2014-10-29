@@ -1,7 +1,6 @@
 #pragma once
 
 #include <thread>
-#include <memory>
 #include <string>
 #include <vector>
 #include <memory>
@@ -48,7 +47,7 @@ namespace base {
     class Task;
     class Timer;
     class ThreadPool;
-    
+
     typedef asio::const_buffer    AcioConstBuffer;
     typedef asio::signal_set      SignalSet;
     typedef asio::io_service      IoService;
@@ -72,16 +71,16 @@ namespace base {
     typedef std::shared_ptr<DeadLineTimer> DeadLineTimerPtr;
 
     typedef std::size_t(IoService::*IoServiceRunFunc)();
-    
+
     typedef std::chrono::high_resolution_clock HighResolutionClock;
     typedef HighResolutionClock::time_point    TimePoint;
-    
+
     typedef chr::nanoseconds  Nano;
     typedef chr::microseconds Micro;
     typedef chr::milliseconds Milli;
-    typedef chr::seconds 	  Secs; 
-    typedef chr::minutes 	  Mins; 
-    typedef chr::hours 	      Hours;
+    typedef chr::seconds      Secs;
+    typedef chr::minutes      Mins;
+    typedef chr::hours        Hours;
 
     typedef bs::error_code   ErrorCode;
     typedef bs::system_error SystemError;
@@ -97,7 +96,7 @@ namespace base {
     typedef std::function<void()>                 Handle;
     typedef std::function<void(const ErrorCode&)> AsioHandle;
     typedef std::function<void(const TaskPtr&)>   TaskHandle;
-    
+
     inline std::time_t castToTimeT(const std::string &time_str)
     {
         struct tm time_tm = {};
@@ -112,7 +111,7 @@ namespace base {
 } // namespace base
 
 
-// release private 
+// release private
 #define AFTERX(name, x) name ## x
 #define XAFTERX(name, x) AFTERX(name, x)
 

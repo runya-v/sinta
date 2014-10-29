@@ -121,9 +121,8 @@ std::vector<typename Container::value_type> BackupSmartFilled<Container>::v;
 
 template<class Container>
 struct NoOp {
-    inline static void run(Container &, std::size_t) {
-        //Nothing
-    }
+    inline static void run(Container&, std::size_t)
+    {}
 };
 
 
@@ -178,7 +177,7 @@ const typename Container::value_type FillBackInserter<Container>::value
 template<class Container>
 struct EmplaceBack {
     inline static void run(Container &c, std::size_t size) {
-        for (size_t i=0; i<size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             c.emplace_back();
         }
     }
@@ -242,7 +241,7 @@ struct Find {
         for (std::size_t i = 0; i < size; ++i) {
             // hand written comparison to eliminate temporary object creation
             std::find_if(
-                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v.a == i;});
+                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v._a == i;});
         }
     }
 };
@@ -256,7 +255,7 @@ struct Insert {
         for (std::size_t i = 0; i < 1000; ++i) {
             // hand written comparison to eliminate temporary object creation
             auto it = std::find_if(
-                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v.a == i;});
+                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v._a == i;});
             c.insert(it, values[i]);
         }
     }
@@ -273,8 +272,8 @@ struct Write {
     inline static void run(Container &c, std::size_t) {
         auto it = std::begin(c);
         auto end = std::end(c);
-        for (auto val : c) {
-            ++val.a;
+        for (auto v : c) {
+            ++v._a;
         }
     }
 };
@@ -298,7 +297,7 @@ struct Erase {
         for (std::size_t i = 0; i < 1000; ++i) {
             // hand written comparison to eliminate temporary object creation
             c.erase(std::find_if(
-                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v.a == i;}));
+                std::begin(c), std::end(c), [&](decltype(*std::begin(c)) v) {return v._a == i;}));
         }
     }
 };
@@ -311,7 +310,7 @@ struct RemoveErase {
             // hand written comparison to eliminate temporary object creation
             c.erase(std::remove_if(
                 begin(c), end(c),
-                [&](decltype(*begin(c)) v) {return v.a == i;}),
+                [&](decltype(*begin(c)) v) {return v._a == i;}),
                 end(c));
         }
     }
@@ -338,7 +337,7 @@ struct Sort<std::list<T>> {
 template<class T>
 struct Sort<boost::intrusive::list<T, boost::intrusive::constant_time_size<false>>> {
     inline static void run(
-        boost::intrusive::list<T, boost::intrusive::constant_time_size<false>>& c,
+        boost::intrusive::list<T, boost::intrusive::constant_time_size<false>> &c,
         std::size_t)
     {
         c.sort();
@@ -367,7 +366,7 @@ struct Reverse<std::list<T>> {
 template<class T>
 struct Reverse<boost::intrusive::list<T, boost::intrusive::constant_time_size<false>>> {
     inline static void run(
-        boost::intrusive::list<T, boost::intrusive::constant_time_size<false>>& c,
+        boost::intrusive::list<T, boost::intrusive::constant_time_size<false>> &c,
         std::size_t)
     {
         c.reverse();
@@ -395,7 +394,7 @@ struct RandomSortedInsert {
             // hand written comparison to eliminate temporary object creation
             c.insert(std::find_if(
                 begin(c), end(c),
-                [&](decltype(*begin(c)) v) {return v.a >= val;}),
+                [&](decltype(*begin(c)) v) {return v._a >= val;}),
                 {val});
         }
     }

@@ -4,3 +4,4 @@
 add_unit_test(ut_cpp11 base ${LOG_LIBS})
 add_unit_test(ut_cpp_examples base ${LOG_LIBS})
 add_unit_test(ut_stllibrary base chart ${LOG_LIBS})
+add_unit_test(ut_welder base chart ${LOG_LIBS})
