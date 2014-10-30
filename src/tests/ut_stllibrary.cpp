@@ -452,18 +452,3 @@ BOOST_AUTO_TEST_CASE(TestBench) {
         NonTrivialArrayMedium>
         ("associated");
 }
-
-//BOOST_AUTO_TEST_CASE(TestStlContainers) {
-//    LOG_TO_STDOUT;
-//    Array();
-//}
-//
-//
-//BOOST_AUTO_TEST_CASE(TestStlPtrs) {
-//    LOG_TO_STDOUT;
-//}
-//
-//
-//BOOST_AUTO_TEST_CASE(TestStlAlgorithms) {
-//    LOG_TO_STDOUT;
-//}
