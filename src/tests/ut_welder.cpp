@@ -48,7 +48,51 @@ enum class DynamikParams {
 };
 
 
+enum class WeldingMethods {
+	MMA,
+	MG,
+	TIG
+};
+
+
 class Idicator {
+	class LedIndicator {
+	};
+	
+	class LcdIndicator {
+	};
+};
+
+
+class GasController {
+};
+
+
+class WireFeeder {
+};
+
+
+class Welder {
+	WelderJobs     _job;
+	WelderParams   _param;
+	WeldingType    _type;
+	WorkMode       _mode;
+	DynamikParams  _dynamik_param;
+	WeldingMethods _method;
+	
+	Idicator _indicator;
+	GasController _gas_ctrl;
+	WireFeeder _wire_feeder;
+	
+public:
+	Welder() {
+		LOG(DEBUG);
+	}
+	
+	void init() {
+	}
+	
+	
 };
 
 
