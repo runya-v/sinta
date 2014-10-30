@@ -39,6 +39,19 @@ enum class WorkMode {
     INTERVAL
 };
 
+
+enum class DynamikParams {
+    DROSSEL,
+    GAS_PURGE_TIME,
+    DOT_WELDING_TIME,
+    PAUSE_TIME
+};
+
+
+class Idicator {
+};
+
+
 BOOST_AUTO_TEST_CASE(TestWelder) {
     LOG_TO_STDOUT;
 }
