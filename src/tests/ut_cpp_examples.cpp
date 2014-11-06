@@ -312,6 +312,38 @@ public:
 };
 
 
+class Example_11 {
+    class A {
+    public:
+        A() {
+        }
+
+        A(const A&) {
+            LOG(DEBUG) << "test " << std::hex << this;
+        }
+
+        ~A() {
+            LOG(DEBUG) << std::hex << this;
+        }
+    };
+public:
+    Example_11() {
+        try{
+            LOG(DEBUG) << "A a1";
+            A a1;
+            LOG(DEBUG) << "A a2 = a1";
+            A a2 = a1;
+            LOG(DEBUG) << "A a3(a2)";
+            A a3(a2);
+            LOG(DEBUG) << "throw a3";
+            throw a3;
+        }
+        catch (A a) {
+            LOG(DEBUG) << "catch (A a)";
+        }
+    }
+};
+
 BOOST_AUTO_TEST_CASE(TestCppExamples) {
     LOG_TO_STDOUT;
 
@@ -324,5 +356,6 @@ BOOST_AUTO_TEST_CASE(TestCppExamples) {
     //Example_7();
     //Example_8();
     //Example_9();
-    Example_10();
+    //Example_10();
+    Example_11();
 }

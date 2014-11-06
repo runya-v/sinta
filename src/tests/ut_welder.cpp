@@ -63,6 +63,19 @@ enum class WeldingMethods : uint8_t  {
 };
 
 
+class DeviceSencorer {
+public:
+
+    DeviceSencorer(
+        bool polarity
+
+        )
+    {
+        LOG(DEBUG);
+    }
+};
+
+
 class Idicator {
     class LedIndicator {
         enum class Leds : uint8_t {
@@ -87,29 +100,31 @@ class Idicator {
             PAUSE_TIME_DYNAMIK_PARAMETER,
             LEDS_NUMBER
         };
-            const std::string _names[20];// = {
-//                "JOB_LIST",
-//                "ERROR",
-//                "OVERHEATING",
-//                "POSITIVE_POLARITY",
-//                "NEGATIVE_POLARITY",
-//                "AMPERS",
-//                "VOLTS",
-//                "THICKNESS",
-//                "FEED_SPEED",
-//                "STANDART_WELDING",
-//                "IMPULSE_WELDING",
-//                "TWO_TAKTS_WORK_MODE",
-//                "FOUR_TAKTS_WORK_MODE",
-//                "DOT_WORK_MODE",
-//                "INTERVAL_WORK_MODE",
-//                "DROSSEL_DYNAMIK_PARAMETER",
-//                "GAS_PURGE_TIME_DYNAMIK_PARAMETER",
-//                "DOT_WELDING_TIME_DYNAMIK_PARAMETER",
-//                "PAUSE_TIME_DYNAMIK_PARAMETER"
-//            };
+
+        std::vector<std::string> _names = {
+            "JOB_LIST",
+            "ERROR",
+            "OVERHEATING",
+            "POSITIVE_POLARITY",
+            "NEGATIVE_POLARITY",
+            "AMPERS",
+            "VOLTS",
+            "THICKNESS",
+            "FEED_SPEED",
+            "STANDART_WELDING",
+            "IMPULSE_WELDING",
+            "TWO_TAKTS_WORK_MODE",
+            "FOUR_TAKTS_WORK_MODE",
+            "DOT_WORK_MODE",
+            "INTERVAL_WORK_MODE",
+            "DROSSEL_DYNAMIK_PARAMETER",
+            "GAS_PURGE_TIME_DYNAMIK_PARAMETER",
+            "DOT_WELDING_TIME_DYNAMIK_PARAMETER",
+            "PAUSE_TIME_DYNAMIK_PARAMETER"
+        };
 
         LedIndicator() {
+            //LOG(DEBUG) << _names[];
         }
     };
 
