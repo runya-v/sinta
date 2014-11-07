@@ -344,6 +344,53 @@ public:
     }
 };
 
+
+class Example_12 {
+    struct List {
+        List *_next;
+        List *_direction;
+        int _id;
+
+        List()
+            : _next(nullptr)
+            , _direction(nullptr)
+            , _id(-1)
+        {}
+    };
+
+    class ListConstMemberLineTimeCloner {
+        List *_out_list;
+
+    public:
+        ListConstMemberLineTimeCloner(const List *in_list) {
+
+            while (in_list) {
+                _out_list = new List;
+                _out_list = in_list->_next;
+                in_list->_direction;
+                in_list->_id;
+
+                in_list = in_list->_next;
+            }
+        }
+
+        operator List* () {
+            return _out_list;
+        }
+    };
+
+public:
+    Example_12() {
+    }
+};
+
+
+class Example_13 {
+public:
+    Example_13() {
+    }
+};
+
 BOOST_AUTO_TEST_CASE(TestCppExamples) {
     LOG_TO_STDOUT;
 

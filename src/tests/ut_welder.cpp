@@ -13,6 +13,20 @@
 #include "Log.hpp"
 
 
+const char *settings = {
+"menu":
+{
+  "foo": true,
+  "bar": "true",
+  "value": 102.3E+06,
+  "popup":
+  [
+     {"value": "New", "onclick": "CreateNewDoc()"},
+     {"value": "Open", "onclick": "OpenDoc()"},
+  ]
+}
+
+
 enum class WelderJobs : uint8_t {
     MATERIAL,
     GAS,
@@ -71,6 +85,7 @@ public:
 
         )
     {
+
         LOG(DEBUG);
     }
 };
