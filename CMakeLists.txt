@@ -65,6 +65,7 @@ include_directories(${SRC_DIR})
 OPTION(ENABLE_TESTS "Enable TESTS support [default: ON]" ON)
 OPTION(ENABLE_CTPP2 "Enable CTPP2 support [default: ON]" ON)
 OPTION(ENABLE_CEF3  "Enable CEF3 support [default: ON]"  OFF)
+OPTION(ENABLE_WELDER_MODEL_WEB  "Enable Welder model [default: ON]"  ON)
 
 
 # Поиск библиотек Boost версии старше 1.48
@@ -218,4 +219,11 @@ if(ENABLE_CEF3)
     message(STATUS "CEF3 includes dir: `${CEF3_EXT_INCS_DIR}`")
 
     add_subdirectory("${WEB_CLIENT_APP_DIR}")
+endif()
+
+if(ENABLE_WELDER_MODEL_WEB)
+    take_component(WTCPP)
+    set(WELDER_MODEL_WEB_DIR "${SRC_DIR}/welder-model-web")
+    message(STATUS "Add dir: `${WELDER_MODEL_WEB_DIR}`")
+    add_subdirectory("${WELDER_MODEL_WEB_DIR}")
 endif()

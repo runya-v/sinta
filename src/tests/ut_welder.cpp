@@ -9,22 +9,17 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/output_test_stream.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "Log.hpp"
 
 
-const char *settings = {
-"menu":
-{
-  "foo": true,
-  "bar": "true",
-  "value": 102.3E+06,
-  "popup":
-  [
-     {"value": "New", "onclick": "CreateNewDoc()"},
-     {"value": "Open", "onclick": "OpenDoc()"},
-  ]
-}
+static const char *WELDER_SETTINGS =
+"{"
+"\"amper:160\","
+"\"ark_lenth:-5\"" // полярность - или +
+"}";
 
 
 enum class WelderJobs : uint8_t {
@@ -77,16 +72,17 @@ enum class WeldingMethods : uint8_t  {
 };
 
 
+namespace bptree = boost::property_tree;
+
+
 class DeviceSencorer {
 public:
-
-    DeviceSencorer(
-        bool polarity
-
-        )
-    {
-
-        LOG(DEBUG);
+    DeviceSencorer(const std::string &state_desc = WELDER_SETTINGS) {
+        //bptree::ptree pt;
+        //bptree::read_json(state_desc, pt);
+        //uint32_t amper = pt.get<uint32_t>("amper");
+        //int32_t ark_lenth = pt.get<int32_t>("ark_lenth");
+        //LOG(DEBUG) << "amper=" << amper << "; ark_lenth=" << ark_lenth;
     }
 };
 
@@ -188,9 +184,10 @@ public:
 
 
 class Welder {
-    std::shared_ptr<Idicator>      _indicator;
-    std::shared_ptr<GasController> _gas_ctrl;
-    std::shared_ptr<WireFeeder>    _wire_feeder;
+    std::shared_ptr<DeviceSencorer> _sencorer;
+    std::shared_ptr<Idicator>       _indicator;
+    std::shared_ptr<GasController>  _gas_ctrl;
+    std::shared_ptr<WireFeeder>     _wire_feeder;
 
 public:
     Welder() {
@@ -203,4 +200,6 @@ public:
 
 BOOST_AUTO_TEST_CASE(TestWelder) {
     LOG_TO_STDOUT;
+
+    Welder();
 }
