@@ -362,16 +362,30 @@ class Example_12 {
         List *_out_list;
 
     public:
-        ListConstMemberLineTimeCloner(const List *in_list) {
+        ListConstMemberLineTimeCloner(List *in_list) {
+            List *head_list = in_list;
 
-            while (in_list) {
+            auto first_step = [&,this]() {
+                _out_list->_direction = in_list->_next;
+                _out_list->_id = in_list->_id;
+                in_list->_next = _out_list;
+                in_list = _out_list->_direction;
+            };
+
+            // Create head
+            if (in_list) {
                 _out_list = new List;
-                _out_list = in_list->_next;
-                in_list->_direction;
-                in_list->_id;
-
-                in_list = in_list->_next;
+                first_step();
             }
+
+            // Create combo list
+            while (in_list) {
+                _out_list->_next = new List;
+                _out_list = _out_list->_next;
+                first_step();
+            }
+
+
         }
 
         operator List* () {
