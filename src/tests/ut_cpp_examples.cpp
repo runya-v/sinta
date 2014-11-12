@@ -361,66 +361,70 @@ class Example_12 {
     };
 
     class ListConstMemberLineTimeCloner {
-        List *_out_list;
+        List *_out;
 
     public:
-        ListConstMemberLineTimeCloner(List *in_list) {
-            List *head_list = in_list;
+        ListConstMemberLineTimeCloner(List *in) {
+            if (in) {
+				// Create combo list
+				List *head = in;
+                _out = new List;
+				while (in->_next) {
+					_out->_id = in->_id;
+					_out->_direction = in->_next;
+					in->_next = _out;
+					in = _out->_direction;
+					_out->_next = new List;
+					_out = _out->_next;
+				}
+				_out->_id = in->_id;
+				in->_next = _out;
 
-            auto first_step = [&,this]() {
-                _out_list->_direction = in_list->_next;
-                _out_list->_id = in_list->_id;
-                in_list->_next = _out_list;
-                in_list = _out_list->_direction;
-            };
+				in = head;
+				_out = in->_next;
+				while (_out) {
+					_out->_direction = _out->_direction->_next;
+					in->_next = _out->_direction;
+					_out->_next = in->_next;
+					_out = in->_next->_next;
+				}
 
-            // Create head
-            if (in_list) {
-                _out_list = new List;
-                first_step();
-            }
-
-            // Create combo list
-            while (in_list) {
-                _out_list->_next = new List;
-                _out_list = _out_list->_next;
-                first_step();
-            }
-
-            // Make new list and restore inpet list
-            in_list = head_list;
-            _out_list = in_list->_next;
-
-            while (in_list) {
-                in_list->_next = _out_list->_direction;
-                _out_list->_direction = in_list->_direction->_next;
-                _out_list = _out_list->_next;
-                in_list = in_list->_next;
+				in = head;
+				_out = in->_next;
+				head = _out;
+				while (in) {
+					in->_next = _out->_next;
+					_out->_next = in->_next->_next;
+					_out = _out->_next;
+					in = in->_next;
+				}
+				_out = head;
             }
         }
 
         operator List* () {
-            return _out_list;
+            return _out;
         }
     };
 
-    static constexpr uint32_t LIST_SIZE = 10;
+    static constexpr uint32_t LIST_SIZE = 3;
 
 public:
     Example_12() {
         // Generate Input List;
         List* list_arr[LIST_SIZE];
 
-        for (List *ptr : list_arr) {
-            ptr = new List;
+        for (uint32_t i = 0; i < LIST_SIZE; ++i) {
+            list_arr[i] = new List;
+            list_arr[i]->_id = i;
         }
 
         std::srand(std::time(0));
-        for (uint32_t i = 1; i < LIST_SIZE; ++i) {
-            uint32_t j = i - 1;
-            list_arr[j]->_id = j;
-            list_arr[j]->_next = list_arr[i];
-            list_arr[j]->_direction = list_arr[std::rand() % (LIST_SIZE - 1)];
+        for (uint32_t i = 0; i < LIST_SIZE; ++i) {
+			uint32_t last = LIST_SIZE - 1;
+            list_arr[i]->_next = (i < last) ? list_arr[i + 1] : nullptr;
+            list_arr[i]->_direction = list_arr[std::rand() % last];
+            LOG(DEBUG) << "generate: [" << list_arr[i]->_id << "]->[" << list_arr[i]->_direction->_id << "]; ";
         }
 
         // Clone
@@ -431,8 +435,8 @@ public:
             LOG(DEBUG)
                 << "in: [" << in_list->_id << "]->[" << in_list->_direction->_id << "]; "
                 << "out: [" << cloned_list->_id << "]->[" << cloned_list->_direction->_id << "]";
-            in_list = in_list->_direction;
-            cloned_list = cloned_list->_direction;
+            in_list = in_list->_next;
+            cloned_list = cloned_list->_next;
         }
     }
 };
