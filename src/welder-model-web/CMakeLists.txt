@@ -1,6 +1,7 @@
 set(APP_NAME welder-model-web)
 
 add_executable(${APP_NAME}
+    LedIndicator.cpp
     Main.cpp
     )
 

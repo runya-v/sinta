@@ -9,6 +9,8 @@
 #include <boost/test/output_test_stream.hpp>
 
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 #include "Log.hpp"
 
@@ -385,7 +387,16 @@ class Example_12 {
                 first_step();
             }
 
+            // Make new list and restore inpet list
+            in_list = head_list;
+            _out_list = in_list->_next;
 
+            while (in_list) {
+                in_list->_next = _out_list->_direction;
+                _out_list->_direction = in_list->_direction->_next;
+                _out_list = _out_list->_next;
+                in_list = in_list->_next;
+            }
         }
 
         operator List* () {
@@ -393,8 +404,36 @@ class Example_12 {
         }
     };
 
+    static constexpr uint32_t LIST_SIZE = 10;
+
 public:
     Example_12() {
+        // Generate Input List;
+        List* list_arr[LIST_SIZE];
+
+        for (List *ptr : list_arr) {
+            ptr = new List;
+        }
+
+        std::srand(std::time(0));
+        for (uint32_t i = 1; i < LIST_SIZE; ++i) {
+            uint32_t j = i - 1;
+            list_arr[j]->_id = j;
+            list_arr[j]->_next = list_arr[i];
+            list_arr[j]->_direction = list_arr[std::rand() % (LIST_SIZE - 1)];
+        }
+
+        // Clone
+        List *in_list = list_arr[0];
+        List *cloned_list = ListConstMemberLineTimeCloner(in_list);
+
+        for (uint32_t i = 0; i < LIST_SIZE; ++i) {
+            LOG(DEBUG)
+                << "in: [" << in_list->_id << "]->[" << in_list->_direction->_id << "]; "
+                << "out: [" << cloned_list->_id << "]->[" << cloned_list->_direction->_id << "]";
+            in_list = in_list->_direction;
+            cloned_list = cloned_list->_direction;
+        }
     }
 };
 
@@ -418,5 +457,6 @@ BOOST_AUTO_TEST_CASE(TestCppExamples) {
     //Example_8();
     //Example_9();
     //Example_10();
-    Example_11();
+    //Example_11();
+    Example_12();
 }
