@@ -366,38 +366,34 @@ class Example_12 {
     public:
         ListConstMemberLineTimeCloner(List *in) {
             if (in) {
-				// Create combo list
 				List *head = in;
-                _out = new List;
-				while (in->_next) {
+				while (in) {
+					_out = new List;
 					_out->_id = in->_id;
-					_out->_direction = in->_next;
+					_out->_next = in->_next;
 					in->_next = _out;
-					in = _out->_direction;
-					_out->_next = new List;
-					_out = _out->_next;
+					in = _out->_next;
 				}
-				_out->_id = in->_id;
-				in->_next = _out;
 
 				in = head;
 				_out = in->_next;
-				while (_out) {
-					_out->_direction = _out->_direction->_next;
-					in->_next = _out->_direction;
-					_out->_next = in->_next;
-					_out = in->_next->_next;
+				while (_out->_next) {
+					_out->_direction = in->_direction->_next;
+					in = _out->_next;
+					_out = in->_next;
 				}
-
+				_out->_direction = in->_direction->_next;
+				
 				in = head;
 				_out = in->_next;
 				head = _out;
-				while (in) {
+				while (_out->_next) {
 					in->_next = _out->_next;
-					_out->_next = in->_next->_next;
-					_out = _out->_next;
 					in = in->_next;
+					_out->_next = in->_next;
+					_out = _out->_next;
 				}
+				in->_next = nullptr;
 				_out = head;
             }
         }
@@ -407,7 +403,7 @@ class Example_12 {
         }
     };
 
-    static constexpr uint32_t LIST_SIZE = 3;
+    static constexpr uint32_t LIST_SIZE = 10;
 
 public:
     Example_12() {
