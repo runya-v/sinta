@@ -22,12 +22,21 @@ LedIndicator::LedIndicator() {
             _symbols_table->elementAt(row, column)->addWidget(new Wt::WText("#"));
         }
     }
-    //Wt::WText *item = new Wt::WText("Item 1");
-    //item->setStyleClass("green-box");
-    //hbox->addWidget(item);
-    //
-    //item = new Wt::WText("Item 2");
-    //item->setStyleClass("blue-box");
-    //hbox->addWidget(item);
+}
+
+
+void LedIndicator::setText(int row, int column, std::string &text) {
+    int row_count = _symbols_table->rowCount();
+    int column_count = _symbols_table->columnCount();
+
+    if (row < row_count && column < column_count) {
+        _symbols_table->elementAt(row, column)->
+    }
+    else {
+        LOG(ERROR)
+            << "Invalid new text parameters: input ["
+            << row << ":" << column << "], but need ["
+            << row_count - 1 << ":" << column_count - 1 << "]."
+    }
 }
 

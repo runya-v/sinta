@@ -17,5 +17,7 @@ namespace Web {
 
     public:
         LedIndicator();
+
+        void setText(uint32_t row, uint32_t column, std::string &text);
     };
 }
