@@ -366,35 +366,35 @@ class Example_12 {
     public:
         ListConstMemberLineTimeCloner(List *in) {
             if (in) {
-				List *head = in;
-				while (in) {
-					_out = new List;
-					_out->_id = in->_id;
-					_out->_next = in->_next;
-					in->_next = _out;
-					in = _out->_next;
-				}
+                List *head = in;
+                while (in) {
+                    _out = new List;
+                    _out->_id = in->_id;
+                    _out->_next = in->_next;
+                    in->_next = _out;
+                    in = _out->_next;
+                }
 
-				in = head;
-				_out = in->_next;
-				while (_out->_next) {
-					_out->_direction = in->_direction->_next;
-					in = _out->_next;
-					_out = in->_next;
-				}
-				_out->_direction = in->_direction->_next;
-				
-				in = head;
-				_out = in->_next;
-				head = _out;
-				while (_out->_next) {
-					in->_next = _out->_next;
-					in = in->_next;
-					_out->_next = in->_next;
-					_out = _out->_next;
-				}
-				in->_next = nullptr;
-				_out = head;
+                in = head;
+                _out = in->_next;
+                while (_out->_next) {
+                    _out->_direction = in->_direction->_next;
+                    in = _out->_next;
+                    _out = in->_next;
+                }
+                _out->_direction = in->_direction->_next;
+
+                in = head;
+                _out = in->_next;
+                head = _out;
+                while (_out->_next) {
+                    in->_next = _out->_next;
+                    in = in->_next;
+                    _out->_next = in->_next;
+                    _out = _out->_next;
+                }
+                in->_next = nullptr;
+                _out = head;
             }
         }
 
@@ -417,7 +417,7 @@ public:
 
         std::srand(std::time(0));
         for (uint32_t i = 0; i < LIST_SIZE; ++i) {
-			uint32_t last = LIST_SIZE - 1;
+            uint32_t last = LIST_SIZE - 1;
             list_arr[i]->_next = (i < last) ? list_arr[i + 1] : nullptr;
             list_arr[i]->_direction = list_arr[std::rand() % last];
             LOG(DEBUG) << "generate: [" << list_arr[i]->_id << "]->[" << list_arr[i]->_direction->_id << "]; ";
@@ -441,8 +441,16 @@ public:
 class Example_13 {
 public:
     Example_13() {
+        std::vector<int> vec;
+        for (int i = 1; i < 6; ++i) {
+            vec.push_back(i * 10);
+        }
+        int arr[] = {10, 20, 80, 320, 1024};
+        std::pair<std::vector<int>::iterator, int*> pair = mismatch(vec.begin(), vec.end(), arr);
+        LOG(DEBUG) << *pair.first << " " << *pair.second;
     }
 };
+
 
 BOOST_AUTO_TEST_CASE(TestCppExamples) {
     LOG_TO_STDOUT;
@@ -458,5 +466,6 @@ BOOST_AUTO_TEST_CASE(TestCppExamples) {
     //Example_9();
     //Example_10();
     //Example_11();
-    Example_12();
+    //Example_12();
+    Example_13();
 }
