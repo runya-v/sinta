@@ -13,49 +13,49 @@
 
 namespace webv {
 
-	class WebViewHandler 
-		: public CefClient
+    class WebViewHandler
+        : public CefClient
         , public CefDisplayHandler
         , public CefLifeSpanHandler
         , public CefLoadHandler
-	{
-		IMPLEMENT_REFCOUNTING(WebViewHandler);
+    {
+        IMPLEMENT_REFCOUNTING(WebViewHandler);
 
-		typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
-		
-		BrowserList _browser_list;
-		bool _is_closing;
+        typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
 
-	public:
-		static WebViewHandler* getInstance();
+        BrowserList _browser_list;
+        bool _is_closing;
 
-		WebViewHandler();
-		virtual ~WebViewHandler();
+    public:
+        static WebViewHandler* getInstance();
 
-		// CefClient methods:
-		virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler();
-		virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler();
-		virtual CefRefPtr<CefLoadHandler> GetLoadHandler();
+        WebViewHandler();
+        virtual ~WebViewHandler();
 
-		// CefDisplayHandler methods:
-		virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title);
+        // CefClient methods:
+        virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler();
+        virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler();
+        virtual CefRefPtr<CefLoadHandler> GetLoadHandler();
 
-		// CefLifeSpanHandler methods:
-		virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser);
-		virtual bool DoClose(CefRefPtr<CefBrowser> browser);
-		virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser);
+        // CefDisplayHandler methods:
+        virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title);
 
-		// CefLoadHandler methods:
-		virtual void OnLoadError(
-			CefRefPtr<CefBrowser> browser,
-			CefRefPtr<CefFrame> frame,
-			ErrorCode error_code,
-			const CefString &error_text,
-			const CefString &failed_url);
+        // CefLifeSpanHandler methods:
+        virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser);
+        virtual bool DoClose(CefRefPtr<CefBrowser> browser);
+        virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser);
 
-		// Request that all existing browser windows close.
-		void CloseAllBrowsers(bool force_close);
+        // CefLoadHandler methods:
+        virtual void OnLoadError(
+            CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
+            ErrorCode error_code,
+            const CefString &error_text,
+            const CefString &failed_url);
 
-		bool IsClosing() const;
-	};
+        // Request that all existing browser windows close.
+        void CloseAllBrowsers(bool force_close);
+
+        bool IsClosing() const;
+    };
 }

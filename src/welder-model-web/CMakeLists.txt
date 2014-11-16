@@ -1,7 +1,16 @@
 set(APP_NAME welder-model-web)
 
 add_executable(${APP_NAME}
-    LedIndicator.cpp
+    JobListPannel.cpp
+    LcdIndicator.cpp
+    WelderParamsPannel.cpp
+    WeldingTypesPannel.cpp
+    IndikatorPannel.cpp
+    ArkLenghtPannel.cpp
+    DynamikParamsPannel.cpp
+    WeldingPowerPannel.cpp
+    WorkModePannel.cpp
+    PotentiometersPannel.cpp
     Main.cpp
     )
 
@@ -9,6 +18,8 @@ target_link_libraries(${APP_NAME}
     ${WTHTTP_LIBRARIES}
     ${WTEXT_LIBRARIES}
     ${WT_LIBRARIES}
+    base
+    ${LOG_LIBS}
     z
     crypto
     ssl

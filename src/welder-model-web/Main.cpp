@@ -21,6 +21,8 @@
 #include <Wt/WVBoxLayout>
 #include <Wt/WOverlayLoadingIndicator>
 
+#include "LcdIndicator.hpp"
+
 
 namespace Web {
 
