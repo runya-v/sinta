@@ -3,8 +3,8 @@
 #include <Wt/WString>
 #include <Wt/WText>
 
-#include "LedIndicator.hpp"
-
+#include "Log.hpp"
+#include "LcdIndicator.hpp"
 
 using namespace Web;
 
@@ -12,8 +12,7 @@ static const uint32_t LED_ROWS = 2;
 static const uint32_t LED_COLUMNS = 16;
 
 
-
-LedIndicator::LedIndicator() {
+LcdIndicator::LcdIndicator() {
     _symbols_table = new Wt::WTable(this);
     _symbols_table->setWidth("100%");
 
@@ -25,18 +24,18 @@ LedIndicator::LedIndicator() {
 }
 
 
-void LedIndicator::setText(int row, int column, std::string &text) {
+void LcdIndicator::setText(int row, int column, std::string &text) {
     int row_count = _symbols_table->rowCount();
     int column_count = _symbols_table->columnCount();
 
     if (row < row_count && column < column_count) {
-        _symbols_table->elementAt(row, column)->
+        //_symbols_table->elementAt(row, column)->
     }
     else {
         LOG(ERROR)
             << "Invalid new text parameters: input ["
             << row << ":" << column << "], but need ["
-            << row_count - 1 << ":" << column_count - 1 << "]."
+            << row_count - 1 << ":" << column_count - 1 << "].";
     }
 }
 
