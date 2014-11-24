@@ -3,10 +3,10 @@
 
 namespace Web {
 
-    class IndikatorPannel
+    class IndicatorPannel
         : public Wt::WContainerWidget
     {
     public:
-        IndikatorPannel();
+        IndicatorPannel();
     };
 }

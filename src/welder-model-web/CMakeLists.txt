@@ -5,7 +5,7 @@ add_executable(${APP_NAME}
     LcdIndicator.cpp
     WelderParamsPannel.cpp
     WeldingTypesPannel.cpp
-    IndikatorPannel.cpp
+    IndicatorPannel.cpp
     ArkLenghtPannel.cpp
     DynamikParamsPannel.cpp
     WeldingPowerPannel.cpp

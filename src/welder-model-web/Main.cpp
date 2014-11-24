@@ -21,7 +21,8 @@
 #include <Wt/WVBoxLayout>
 #include <Wt/WOverlayLoadingIndicator>
 
-#include "LcdIndicator.hpp"
+#include "IndicatorPannel.hpp"
+#include "PotentiometersPannel.hpp"
 
 
 namespace Web {
@@ -39,16 +40,9 @@ namespace Web {
             app->setLoadingIndicator(new Wt::WOverlayLoadingIndicator());
             app->styleSheet().addRule("body", "margin: 0px");
 
-//            std::string absolute_path = boost::filesystem::system_complete(boost::filesystem::path(".")).string();
-//            new RegionsCreator(absolute_path, contents, menu);
-//
-            Wt::WVBoxLayout* layout = new Wt::WVBoxLayout();
-
-            Wt::WHBoxLayout* hlayout = new Wt::WHBoxLayout(this->root());
-            //hlayout->addWidget(contents, 1);
-//
-//            vlayout->addWidget(new Wt::WText(Wt::WString::tr("Header")), 0);
-//            vlayout->addLayout(hlayout, 1);
+            Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this->root());
+            vlayout->addWidget(new IndicatorPannel(), 0);
+            vlayout->addWidget(new PotentiometersPannel(), 1);
         }
     };
 

@@ -1,4 +1,3 @@
-#include <Wt/WHBoxLayout>
 #include <Wt/WVBoxLayout>
 #include <Wt/WString>
 #include <Wt/WText>
@@ -13,7 +12,8 @@ static const uint32_t LED_COLUMNS = 16;
 
 
 LcdIndicator::LcdIndicator() {
-    _symbols_table = new Wt::WTable(this);
+    Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    _symbols_table = new Wt::WTable();
     _symbols_table->setWidth("100%");
 
     for (uint32_t row = 0; row < LED_ROWS; ++row) {
@@ -21,6 +21,8 @@ LcdIndicator::LcdIndicator() {
             _symbols_table->elementAt(row, column)->addWidget(new Wt::WText("#"));
         }
     }
+    vlayout->addWidget(new Wt::WText("LCD"), 0);
+    vlayout->addWidget(_symbols_table, 1);
 }
 
 
