@@ -26,23 +26,31 @@
 
 
 namespace Web {
+    namespace bfs = boost::filesystem;
+
 
     class WelderApplication : public Wt::WApplication {
     public:
         WelderApplication(const Wt::WEnvironment& env)
             : Wt::WApplication(env)
         {
-            this->messageResourceBundle().use(this->appRoot() + "rus_locale");
-            this->useStyleSheet(this->appRoot() + "main.css");
+			bfs::path abs_path = bfs::absolute(bfs::path(this->docRoot()));
+
+            this->messageResourceBundle().use((abs_path / "rus_locale").string());
+            //this->useStyleSheet((abs_path / "main.css").string());
             this->setTitle(Wt::WString::tr("Title"));
 
             Wt::WApplication *app = Wt::WApplication::instance();
             app->setLoadingIndicator(new Wt::WOverlayLoadingIndicator());
             app->styleSheet().addRule("body", "margin: 0px");
 
-            Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this->root());
-            vlayout->addWidget(new IndicatorPannel(), 0);
+            Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout();
+            vlayout->addWidget(new IndicatorPannel(), 1);
             vlayout->addWidget(new PotentiometersPannel(), 1);
+            
+            Wt::WContainerWidget *container = new Wt::WContainerWidget(this->root());
+			container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+            container->setLayout(vlayout);
         }
     };
 

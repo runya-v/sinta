@@ -1,6 +1,9 @@
 #include <Wt/WVBoxLayout>
 #include <Wt/WString>
 #include <Wt/WText>
+#include <Wt/WCssDecorationStyle>
+#include <Wt/WBorder>
+#include <Wt/WColor>
 
 #include "Log.hpp"
 #include "LcdIndicator.hpp"
@@ -12,17 +15,19 @@ static const uint32_t LED_COLUMNS = 16;
 
 
 LcdIndicator::LcdIndicator() {
-    Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+	this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+
     _symbols_table = new Wt::WTable();
     _symbols_table->setWidth("100%");
-
     for (uint32_t row = 0; row < LED_ROWS; ++row) {
         for (uint32_t column = 0; column < LED_COLUMNS; ++column) {
             _symbols_table->elementAt(row, column)->addWidget(new Wt::WText("#"));
         }
     }
-    vlayout->addWidget(new Wt::WText("LCD"), 0);
-    vlayout->addWidget(_symbols_table, 1);
+
+    Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->addWidget(new Wt::WText("LCD"));
+    vlayout->addWidget(_symbols_table);
 }
 
 
