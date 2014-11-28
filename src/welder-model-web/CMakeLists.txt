@@ -1,6 +1,7 @@
 set(APP_NAME welder-model-web)
 
 add_executable(${APP_NAME}
+    LightDiode.cpp
     JobListPannel.cpp
     LcdIndicator.cpp
     WelderParamsPannel.cpp
