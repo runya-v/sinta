@@ -34,10 +34,10 @@ namespace Web {
         WelderApplication(const Wt::WEnvironment& env)
             : Wt::WApplication(env)
         {
-			bfs::path abs_path = bfs::absolute(bfs::path(this->docRoot()));
+            bfs::path abs_path = bfs::absolute(bfs::path(this->docRoot()));
 
+            this->useStyleSheet((abs_path / "main.css").string());
             this->messageResourceBundle().use((abs_path / "rus_locale").string());
-            //this->useStyleSheet((abs_path / "main.css").string());
             this->setTitle(Wt::WString::tr("Title"));
 
             Wt::WApplication *app = Wt::WApplication::instance();
@@ -47,9 +47,9 @@ namespace Web {
             Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout();
             vlayout->addWidget(new IndicatorPannel(), 1);
             vlayout->addWidget(new PotentiometersPannel(), 1);
-            
+
             Wt::WContainerWidget *container = new Wt::WContainerWidget(this->root());
-			container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+            container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
             container->setLayout(vlayout);
         }
     };

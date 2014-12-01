@@ -3,8 +3,8 @@
     <message id="job_list"><h2>Список заданий</h2></message>
     <message id="accident"><h2>Авария</h2></message>
     <message id="overheating"><h2>Перегрев</h2></message>
-    <message id="positive_polarity"><h2>+ полярность</h2></message>
-    <message id="negative_polarity"><h2>- полярность</h2></message>
+    <message id="positive_polarity"><h2>"+" полярность</h2></message>
+    <message id="negative_polarity"><h2>"-" полярность</h2></message>
     <message id="ampers"><h2>Амперы</h2></message>
     <message id="volts"><h2>Вольты</h2></message>
     <message id="thickness"><h2>Толщина</h2></message>
@@ -29,4 +29,22 @@
     <message id="WeldingPowerPannel"><h2>Панель настроек мощности</h2></message>
     <message id="WeldingTypesPannel"><h2>Панель типов сварки</h2></message>
     <message id="WorkModePannel"><h2>Панель режимов работы</h2></message>
+    <message id="LightDiode"><h2>Светодиод</h2></message>
+
+    <message id="job_list_diode">Программа</message>
+    <message id="indication_error">Общая Неисправность</message>
+    <message id="indication_overheating">Перегрев</message>
+    <message id="indication_positive_polarity">"+" полярность</message>
+    <message id="indication_negative_polarity">"-" полярность</message>
+    <message id="indication_volts">Вольты</message>
+    <message id="indication_ampers">Амперы</message>
+    <message id="indication_thickness">Толщина</message>
+    <message id="indication_feed_speed">Скорость подачи</message>
+    <message id="indication_standart_welding">Стандартный режим</message>
+    <message id="indication_pulse_welding">Импульсный режим</message>
+
+    <message id="job_list_button">Программа</message>
+    <message id="welder_params_button">Параметры аппарата</message>
+    <message id="welding_type_button">Тип Сварки</message>
+    <message id="work_mode_button">Режим работы</message>
 </messages>

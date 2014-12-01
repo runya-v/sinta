@@ -4,15 +4,30 @@
 #include <Wt/WCssDecorationStyle>
 #include <Wt/WBorder>
 #include <Wt/WColor>
+#include <Wt/WPushButton>
 
+#include "LightDiode.hpp"
 #include "WeldingTypesPannel.hpp"
 
 using namespace Web;
 
 
 WeldingTypesPannel::WeldingTypesPannel() {
-	this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    //this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    this->setStyleClass("welding-type");
 
-	Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
-	vlayout->addWidget(new Wt::WText(Wt::WString::tr("WeldingTypesPannel")));
+    Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->addWidget(new Wt::WText(Wt::WString::tr("WeldingTypesPannel")));
+    Wt::WPushButton *button = new Wt::WPushButton(Wt::WString::tr("welding_type_button"));
+    button->clicked().connect(std::bind([=] () {
+        //canvas->clear();
+    }));
+    vlayout->addWidget(button);
+    vlayout->addWidget(new LightDiode("indication_standart_welding"));
+    vlayout->addWidget(new LightDiode("indication_pulse_welding"));
+    button = new Wt::WPushButton(Wt::WString::tr("work_mode_button"));
+    button->clicked().connect(std::bind([=] () {
+        //canvas->clear();
+    }));
+    vlayout->addWidget(button);
 }
