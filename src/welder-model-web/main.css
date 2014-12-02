@@ -7,9 +7,40 @@ body, html {
     overflow: scroll;
 }
 
+.welder {
+    border: 1px solid black;
+    width: 100%;
+    height: 100%;
+}
+
+.pannel {
+    border: 1px solid black;
+    width: 100%;
+    height: 50%;
+}
+
+.job-list {
+    border: 1px solid black;
+    width: 50%;
+    height: 25%;
+}
+
+.lcd-indicator {
+    border: 1px solid black;
+    width: 50%;
+    height: 25%;
+}
+
 .welding-type {
     border: 1px solid black;
-    width: 400px;
+    width: 25%;
+    height: 50%;
+}
+
+.welder-params {
+    border: 1px solid black;
+    width: 25%;
+    height: 50%;
 }
 
 ul {

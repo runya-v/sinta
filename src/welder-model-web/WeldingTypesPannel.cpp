@@ -13,7 +13,6 @@ using namespace Web;
 
 
 WeldingTypesPannel::WeldingTypesPannel() {
-    //this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
     this->setStyleClass("welding-type");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);

@@ -36,7 +36,8 @@ namespace Web {
         {
             bfs::path abs_path = bfs::absolute(bfs::path(this->docRoot()));
 
-            this->useStyleSheet((abs_path / "main.css").string());
+            //this->useStyleSheet((abs_path / "main.css").string());
+            this->useStyleSheet("main.css");
             this->messageResourceBundle().use((abs_path / "rus_locale").string());
             this->setTitle(Wt::WString::tr("Title"));
 
@@ -49,7 +50,8 @@ namespace Web {
             vlayout->addWidget(new PotentiometersPannel(), 1);
 
             Wt::WContainerWidget *container = new Wt::WContainerWidget(this->root());
-            container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+            container->setStyleClass("welder");
+            //container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
             container->setLayout(vlayout);
         }
     };

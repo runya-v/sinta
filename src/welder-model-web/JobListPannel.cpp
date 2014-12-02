@@ -14,7 +14,8 @@ using namespace Web;
 
 
 JobListPannel::JobListPannel() {
-    this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    //this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    this->setStyleClass("job-list");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("JobListPannel")));

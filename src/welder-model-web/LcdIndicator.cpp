@@ -15,7 +15,7 @@ static const uint32_t LED_COLUMNS = 16;
 
 
 LcdIndicator::LcdIndicator() {
-	this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    this->setStyleClass("lcd-indicator");
 
     _symbols_table = new Wt::WTable();
     _symbols_table->setWidth("100%");

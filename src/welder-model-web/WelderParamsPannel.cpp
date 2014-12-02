@@ -13,7 +13,7 @@ using namespace Web;
 
 
 WelderParamsPannel::WelderParamsPannel() {
-    this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    this->setStyleClass("welder-params");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WelderParamsPannel")));
