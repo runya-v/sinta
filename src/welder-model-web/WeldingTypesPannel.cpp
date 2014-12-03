@@ -17,14 +17,14 @@ WeldingTypesPannel::WeldingTypesPannel() {
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WeldingTypesPannel")));
-    Wt::WPushButton *button = new Wt::WPushButton(Wt::WString::tr("welding_type_button"));
+    Wt::WPushButton *button = new Wt::WPushButton(Wt::WString::tr("gas_check_button"));
     button->clicked().connect(std::bind([=] () {
         //canvas->clear();
     }));
     vlayout->addWidget(button);
     vlayout->addWidget(new LightDiode("indication_standart_welding"));
     vlayout->addWidget(new LightDiode("indication_pulse_welding"));
-    button = new Wt::WPushButton(Wt::WString::tr("work_mode_button"));
+    button = new Wt::WPushButton(Wt::WString::tr("welding_type_button"));
     button->clicked().connect(std::bind([=] () {
         //canvas->clear();
     }));

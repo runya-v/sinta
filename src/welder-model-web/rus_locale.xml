@@ -1,35 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?> <messages>
     <message id="Title">Эмулятор сварочного полуавтомата</message>
-    <message id="job_list"><h2>Список заданий</h2></message>
-    <message id="accident"><h2>Авария</h2></message>
-    <message id="overheating"><h2>Перегрев</h2></message>
-    <message id="positive_polarity"><h2>"+" полярность</h2></message>
-    <message id="negative_polarity"><h2>"-" полярность</h2></message>
-    <message id="ampers"><h2>Амперы</h2></message>
-    <message id="volts"><h2>Вольты</h2></message>
-    <message id="thickness"><h2>Толщина</h2></message>
-    <message id="feed_speed"><h2>Скорость подачи</h2></message>
-    <message id="standart_welding"><h2>Стандартная сварка</h2></message>
-    <message id="impulse_welding"><h2>Импульсная сварка</h2></message>
-    <message id="two_takts_work_mode"><h2>2 тактный режим сварки</h2></message>
-    <message id="four_takts_work_mode"><h2>4 тактный режим сварки</h2></message>
-    <message id="dot_work_mode"><h2>Точечный режим сварки</h2></message>
-    <message id="interval_work_mode"><h2>Интервальный режим сварки</h2></message>
-    <message id="drossel_dynamik_parameter"><h2>Дросселирование/Динамика</h2></message>
-    <message id="gas_purge_time_dynamik_parameter"><h2>Время продувки газом</h2></message>
-    <message id="dot_welding_time_dynamik_parameter"><h2>Время сварки точки</h2></message>
-    <message id="pulse_time_dynamik_parameter"><h2>Время паузы</h2></message>
-    <message id="ArkLenghtPannel"><h2>Панель настроек дуги</h2></message>
-    <message id="DynamikParamsPannel"><h2>Панель динамических параметров</h2></message>
-    <message id="IndicatorPannel"><h2>Индикаторная панель</h2></message>
-    <message id="JobListPannel"><h2>Панель списка заданий</h2></message>
-    <message id="LcdIndicator"><h2>LCD индикатор</h2></message>
-    <message id="PotentiometersPannel"><h2>Панель потенциометров</h2></message>
-    <message id="WelderParamsPannel"><h2>Панель параметров аппарата</h2></message>
-    <message id="WeldingPowerPannel"><h2>Панель настроек мощности</h2></message>
-    <message id="WeldingTypesPannel"><h2>Панель типов сварки</h2></message>
-    <message id="WorkModePannel"><h2>Панель режимов работы</h2></message>
-    <message id="LightDiode"><h2>Светодиод</h2></message>
+    <message id="ArkLenghtPannel"><h3>Панель настроек дуги</h3></message>
+    <message id="DynamikParamsPannel"><h3>Панель динамических параметров</h3></message>
+    <message id="IndicatorPannel"><h3>Индикаторная панель</h3></message>
+    <message id="JobListPannel"><h3>Панель списка заданий</h3></message>
+    <message id="LcdIndicator"><h3>LCD индикатор</h3></message>
+    <message id="PotentiometersPannel"><h3>Панель потенциометров</h3></message>
+    <message id="WelderParamsPannel"><h3>Панель параметров аппарата</h3></message>
+    <message id="WeldingPowerPannel"><h3>Панель настроек мощности</h3></message>
+    <message id="WeldingTypesPannel"><h3>Панель типов сварки</h3></message>
+    <message id="WorkModePannel"><h3>Панель режимов работы</h3></message>
+    <message id="LightDiode"><h3>Светодиод</h3></message>
 
     <message id="job_list_diode">Программа</message>
     <message id="indication_error">Общая Неисправность</message>
@@ -42,9 +23,19 @@
     <message id="indication_feed_speed">Скорость подачи</message>
     <message id="indication_standart_welding">Стандартный режим</message>
     <message id="indication_pulse_welding">Импульсный режим</message>
+    <message id="indication_two_takts_work_mode">2 тактный режим сварки</message>
+    <message id="indication_four_takts_work_mode">4 тактный режим сварки</message>
+    <message id="indication_dot_work_mode">Точечный режим сварки</message>
+    <message id="indication_interval_work_mode">Интервальный режим сварки</message>
+    <message id="indication_drossel_dynamik_parameter">Дросселирование/Динамика</message>
+    <message id="indication_gas_purge_time_dynamik_parameter">Время продувки газом</message>
+    <message id="indication_dot_welding_time_dynamik_parameter">Время сварки точки</message>
+    <message id="indication_pulse_time_dynamik_parameter">Время паузы</message>
 
     <message id="job_list_button">Программа</message>
     <message id="welder_params_button">Параметры аппарата</message>
     <message id="welding_type_button">Тип Сварки</message>
+    <message id="gas_check_button">Проверка газа</message>
     <message id="work_mode_button">Режим работы</message>
+    <message id="dynamik_params_button">Динмические параметры</message>
 </messages>

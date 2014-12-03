@@ -26,7 +26,7 @@ LcdIndicator::LcdIndicator() {
     }
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
-    vlayout->addWidget(new Wt::WText("LCD"));
+    vlayout->addWidget(new Wt::WText(Wt::WString::tr("LcdIndicator")));
     vlayout->addWidget(_symbols_table);
 }
 

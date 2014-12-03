@@ -4,15 +4,28 @@
 #include <Wt/WCssDecorationStyle>
 #include <Wt/WBorder>
 #include <Wt/WColor>
+#include <Wt/WPushButton>
 
+#include "LightDiode.hpp"
 #include "DynamikParamsPannel.hpp"
 
 using namespace Web;
 
 
 DynamikParamsPannel::DynamikParamsPannel() {
-	this->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
+    this->setStyleClass("welding-type");
 
-	Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
-	vlayout->addWidget(new Wt::WText(Wt::WString::tr("DynamikParamsPannel")));
+    Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->addWidget(new Wt::WText(Wt::WString::tr("DynamikParamsPannel")));
+
+    vlayout->addWidget(new LightDiode("indication_drossel_dynamik_parameter"));
+    vlayout->addWidget(new LightDiode("indication_gas_purge_time_dynamik_parameter"));
+    vlayout->addWidget(new LightDiode("indication_dot_welding_time_dynamik_parameter"));
+    vlayout->addWidget(new LightDiode("indication_pulse_time_dynamik_parameter"));
+    Wt::WPushButton *button = new Wt::WPushButton(Wt::WString::tr("dynamik_params_button"));
+    button->clicked().connect(std::bind([=] () {
+        //canvas->clear();
+    }));
+    vlayout->addWidget(button);
+
 }

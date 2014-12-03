@@ -13,11 +13,14 @@ using namespace Web;
 class PaintedWidget
     : public Wt::WPaintedWidget
 {
+    static constexpr int _width = 15;
+    static constexpr int _height = 15;
+
 public:
     PaintedWidget(Wt::WContainerWidget *parent = 0)
         : Wt::WPaintedWidget(parent)
     {
-        resize(30, 30);
+        resize(_width, _height);
     }
 
 protected:
@@ -26,7 +29,7 @@ protected:
         painter.setBrush(Wt::WBrush(Wt::WBrush(Wt::green)));
         painter.setPen(Wt::black);
         Wt::WPainterPath filled_ellipse_path = Wt::WPainterPath();
-        filled_ellipse_path.addEllipse(0, 0, 30, 30);
+        filled_ellipse_path.addEllipse(0, 0, _width, _height);
         filled_ellipse_path.closeSubPath();
         painter.drawPath(filled_ellipse_path);
     }
