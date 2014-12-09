@@ -20,16 +20,19 @@ PotentiometersPannel::PotentiometersPannel() {
     this->setStyleClass("pannel");
 
     Wt::WHBoxLayout *hbox = new Wt::WHBoxLayout();
-    hbox->addWidget(new WorkModePannel(), 1);
+    hbox->setContentsMargins(5, 5, 5, 5);
+    hbox->addWidget(new WorkModePannel());
 
     Wt::WVBoxLayout *vbox = new Wt::WVBoxLayout();
-    vbox->addWidget(new WeldingPowerPannel(), 1);
-    vbox->addWidget(new ArkLenghtPannel(), 1);
+    vbox->setContentsMargins(5, 5, 5, 5);
+    vbox->addWidget(new WeldingPowerPannel());
+    vbox->addWidget(new ArkLenghtPannel());
     hbox->addLayout(vbox);
 
-    hbox->addWidget(new DynamikParamsPannel(), 1);
+    hbox->addWidget(new DynamikParamsPannel());
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->setContentsMargins(5, 5, 5, 5);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("PotentiometersPannel")));
     vlayout->addLayout(hbox);
 }

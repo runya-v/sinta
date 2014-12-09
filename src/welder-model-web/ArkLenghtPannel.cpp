@@ -16,4 +16,5 @@ ArkLenghtPannel::ArkLenghtPannel() {
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("ArkLenghtPannel")));
+	vlayout->setContentsMargins(5, 5, 5, 5);
 }

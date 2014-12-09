@@ -16,6 +16,7 @@ DynamikParamsPannel::DynamikParamsPannel() {
     this->setStyleClass("welding-type");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+	vlayout->setContentsMargins(5, 5, 5, 5);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("DynamikParamsPannel")));
 
     vlayout->addWidget(new LightDiode("indication_drossel_dynamik_parameter"));
@@ -27,5 +28,4 @@ DynamikParamsPannel::DynamikParamsPannel() {
         //canvas->clear();
     }));
     vlayout->addWidget(button);
-
 }

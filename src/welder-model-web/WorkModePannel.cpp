@@ -16,6 +16,7 @@ WorkModePannel::WorkModePannel() {
     this->setStyleClass("welding-type");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->setContentsMargins(5, 5, 5, 5);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WorkModePannel")));
 
     vlayout->addWidget(new LightDiode("indication_two_takts_work_mode"));

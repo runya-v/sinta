@@ -16,6 +16,7 @@ WeldingTypesPannel::WeldingTypesPannel() {
     this->setStyleClass("welding-type");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->setContentsMargins(5, 5, 5, 5);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WeldingTypesPannel")));
     Wt::WPushButton *button = new Wt::WPushButton(Wt::WString::tr("gas_check_button"));
     button->clicked().connect(std::bind([=] () {

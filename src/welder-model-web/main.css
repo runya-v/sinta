@@ -25,6 +25,10 @@ body, html {
     height: 25%;
 }
 
+.job-list-column {
+    width: 33%;
+}
+
 .lcd-indicator {
     border: 1px solid black;
     width: 50%;

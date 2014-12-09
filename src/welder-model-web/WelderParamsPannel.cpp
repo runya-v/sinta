@@ -16,6 +16,7 @@ WelderParamsPannel::WelderParamsPannel() {
     this->setStyleClass("welder-params");
 
     Wt::WVBoxLayout *vlayout = new Wt::WVBoxLayout(this);
+    vlayout->setContentsMargins(5, 5, 5, 5);
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WelderParamsPannel")));
 
     vlayout->addWidget(new LightDiode("indication_volts"));
