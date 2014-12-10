@@ -20,21 +20,17 @@ WeldingPowerPannel::WeldingPowerPannel() {
     vlayout->addWidget(new Wt::WText(Wt::WString::tr("WeldingPowerPannel")));
     
     Wt::WContainerWidget *container = new Wt::WContainerWidget();
-    container->setStyleClass("welder");
-    //container->decorationStyle().setBorder(Wt::WBorder(Wt::WBorder::Solid, Wt::WBorder::Thin, Wt::WColor(0, 0, 0, 255)));
     vlayout->addWidget(container);
 	new Wt::WBreak(container);
 	Wt::WSlider *slider = new Wt::WSlider(container);
-	slider->decorationStyle().setBackgroundColor(Wt::WColor(0, 0, 100, 255)); 
-	//slider->decorationStyle().setForegroundColor(Wt::WColor(0, 0, 100, 255));
-	//slider->resize(Wt::WLength(100, Wt::WLength::Percentage), Wt::WLength(50, Wt::WLength::Percentage));
-	slider->resize(500, 50);
-	//slider->setTickPosition(Wt::WSlider::TicksAbove);
-	slider->setTickPosition(Wt::WSlider::TicksBothSides);
+	slider->setStyleClass("slider");
+	slider->resize(400, 50);
 	slider->setRange(0, 1000);
+	new Wt::WBreak(container);
+	Wt::WText *out = new Wt::WText(container);
 	new Wt::WBreak(container);
 
 	slider->valueChanged().connect(std::bind([=] () {
-		//out->setText("I'm born in the year " + slider->valueText() + ".");
+		out->setText(slider->valueText());
 	}));
 }
