@@ -14,7 +14,11 @@ namespace Web {
     class LightDiode
         : public Wt::WContainerWidget
     {
+        Wt::WHBoxLayout *_hlayout;
+
     public:
         LightDiode(const std::string &text);
+
+        void light(bool);
     };
 }

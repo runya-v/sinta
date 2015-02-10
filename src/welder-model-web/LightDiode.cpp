@@ -1,8 +1,6 @@
 #include <Wt/WHBoxLayout>
 #include <Wt/WPaintedWidget>
 #include <Wt/WPainter>
-#include <Wt/WPainterPath>
-#include <Wt/WBrush>
 #include <Wt/WText>
 
 #include "LightDiode.hpp"
@@ -40,4 +38,9 @@ LightDiode::LightDiode(const std::string &text) {
     Wt::WHBoxLayout *hlayout = new Wt::WHBoxLayout(this);
     hlayout->addWidget(new PaintedWidget(this));
     hlayout->addWidget(new Wt::WText(Wt::WString::tr(text)));
+}
+
+
+void LightDiode::light(bool on) {
+    hlayout;
 }
