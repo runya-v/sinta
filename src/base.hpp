@@ -1,11 +1,10 @@
 #pragma once
 
-#include <thread>
 #include <string>
 #include <vector>
 #include <memory>
-#include <chrono>
 #include <functional>
+#include <thread>
 
 #define BOOST_THREAD_USE_LIB
 
@@ -72,30 +71,14 @@ namespace base {
 
     typedef std::size_t(IoService::*IoServiceRunFunc)();
 
-    typedef std::chrono::high_resolution_clock HighResolutionClock;
-    typedef HighResolutionClock::time_point    TimePoint;
-
-    typedef chr::nanoseconds  Nano;
-    typedef chr::microseconds Micro;
-    typedef chr::milliseconds Milli;
-    typedef chr::seconds      Secs;
-    typedef chr::minutes      Mins;
-    typedef chr::hours        Hours;
-
     typedef bs::error_code   ErrorCode;
     typedef bs::system_error SystemError;
 
-    typedef boost::uuids::uuid     Uuid;
-    typedef std::shared_ptr<Timer> TimerPtr;
-
+    typedef boost::uuids::uuid Uuid;
     typedef std::shared_ptr<std::thread> ThreadPtr;
-    typedef std::shared_ptr<Task>        TaskPtr;
-    typedef std::shared_ptr<ThreadPool>  ThreadPoolPtr;
-    typedef std::weak_ptr<ThreadPool>    ThreadPoolWptr;
 
     typedef std::function<void()>                 Handle;
     typedef std::function<void(const ErrorCode&)> AsioHandle;
-    typedef std::function<void(const TaskPtr&)>   TaskHandle;
 
     inline std::time_t castToTimeT(const std::string &time_str)
     {

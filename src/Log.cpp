@@ -1,15 +1,18 @@
+#include <dirent.h>
+
 #include <thread>
 #include <sstream>
 #include <iomanip>
 #include <ctime>
+#include <stdexcept>
 
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
-#include <boost/exception/diagnostic_information.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/filter/zlib.hpp>
-#include <boost/iostreams/copy.hpp>
-#include <boost/lexical_cast.hpp>
+//#include <boost/filesystem.hpp>
+//#include <boost/format.hpp>
+//#include <boost/exception/diagnostic_information.hpp>
+//#include <boost/iostreams/filtering_stream.hpp>
+//#include <boost/iostreams/filter/zlib.hpp>
+//#include <boost/iostreams/copy.hpp>
+//#include <boost/lexical_cast.hpp>
 
 #include "Log.hpp"
 
@@ -20,29 +23,49 @@ using namespace base;
 #endif
 
 
-namespace boost {
-    void tss_cleanup_implemented(void)
-    {}
+//namespace boost {
+//    void tss_cleanup_implemented(void)
+//    {}
+//
+//
+//    template <>
+//    inline std::string lexical_cast<std::string, Log::Level>(const Log::Level& value) {
+//        switch (value) {
+//            case TEST:
+//               return "TEST";
+//            case INFO:
+//               return "INFO";
+//            case DEBUG:
+//               return "DEBUG";
+//            case WARNING:
+//               return "WARNING";
+//            case ERROR:
+//                return "ERROR";
+//            case FATAL:
+//                return "FATAL";
+//            default:
+//                BOOST_THROW_EXCEPTION(boost::bad_lexical_cast());
+//        }
+//    }
+//}
 
 
-    template <>
-    inline std::string lexical_cast<std::string, Log::Level>(const Log::Level& value) {
-        switch (value) {
-            case TEST:
-               return "TEST";
-            case INFO:
-               return "INFO";
-            case DEBUG:
-               return "DEBUG";
-            case WARNING:
-               return "WARNING";
-            case ERROR:
-                return "ERROR";
-            case FATAL:
-                return "FATAL";
-            default:
-                BOOST_THROW_EXCEPTION(boost::bad_lexical_cast());
-        }
+operator std::string (const Log::Level& value) {
+    switch (value) {
+        case TEST:
+           return "TEST";
+        case INFO:
+           return "INFO";
+        case DEBUG:
+           return "DEBUG";
+        case WARNING:
+           return "WARNING";
+        case ERROR:
+            return "ERROR";
+        case FATAL:
+            return "FATAL";
+        default:
+            throw std::runtime_error("LOD ERROR: Udeclared level");
     }
 }
 
@@ -53,12 +76,13 @@ static std::string logFileName(std::uint32_t i, bool z) {
     char buffer[32];
     // Format: Mo, 15.06.2009 20:20:00
     strftime(buffer, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm);
-
-    boost::format f = boost::format("%s-%u.%s")
-        % buffer
-        % i
-        % (z ? "zippedlog" : "log")
-        ;
+    std::stringstream ss;
+    ss << buffer << "-" << i << "." << (z ? "zippedlog" : "log");
+//    boost::format f = boost::format("%s-%u.%s")
+//        % buffer
+//        % i
+//        % (z ? "zippedlog" : "log")
+//        ;
     return f.str();
 }
 
@@ -112,12 +136,18 @@ void Log::execute() {
         auto message = std::get<2>(task);
         auto time    = std::get<3>(task);
 
-        boost::format f = boost::format("%5u. [%s] [%s] [%s] %s\n")
-            % boost::lexical_cast<std::string>(_file_line_number++)
-            % boost::posix_time::to_simple_string(time)
-            % boost::lexical_cast<std::string>(module)
-            % boost::lexical_cast<std::string>(level)
-            % message;
+        std::stringstream ss;
+        ss << (++_file_line_number);
+        ss << ". [" << time << "]";
+        ss << " [" << module << "]";
+        ss << " [" << level << "]";
+        ss << " " << message << "\n"
+//        boost::format f = boost::format("%5u. [%s] [%s] [%s] %s\n")
+//            % boost::lexical_cast<std::string>(_file_line_number++)
+//            % boost::posix_time::to_simple_string(time)
+//            % boost::lexical_cast<std::string>(module)
+//            % boost::lexical_cast<std::string>(level)
+//            % message;
 
         if (_log_out) {
             std::cout << f.str() << std::flush;
@@ -158,16 +188,40 @@ void Log::close() {
 
     auto now = std::chrono::system_clock::now();
 
-    for (
-        auto it = boost::filesystem::directory_iterator(boost::filesystem::path("."));
-        it not_eq boost::filesystem::directory_iterator();
-        ++it)
-    {
-        if (not boost::filesystem::is_regular_file(it->status())) {
+    struct dirent *epdf;
+
+    DIR *dpdf = opendir("./");
+    if (NULL not_eq dpdf) {
+        while (epdf = readdir(dpdf)) {
+          //printf("Filename: %s", epdf->d_name);
+          // std::out << epdf->d_name << std::endl;
+//        }
+//    }
+
+//    for (
+//        auto it = boost::filesystem::directory_iterator(boost::filesystem::path("."));
+//        it not_eq boost::filesystem::directory_iterator();
+//        ++it)
+//    {
+//        if (not boost::filesystem::is_regular_file(it->status())) {
+//            continue;
+//        }
+        if (DT_REG not_eq epdf->d_type) {
             continue;
         }
 
-        boost::filesystem::path file_path(it->path());
+        std::string name = epdf->d_name;
+        std::string ext = name.substr();
+        auto pos = name.find(".");
+
+        if (pos == std::string::npos) {
+            continue;
+        }
+        else {
+            std::cout << "found: \"" << s.substr(n) << "\" at " << n << '\n';
+        }
+
+        //boost::filesystem::path file_path(it->path());
 
         if (file_path.extension() == ".log" or file_path.extension() == ".zlog") {
             auto mod = std::chrono::system_clock::from_time_t(boost::filesystem::last_write_time(it->path()));
@@ -201,7 +255,10 @@ void Log::print(const Log::Level& level, const std::string& module, const std::s
     std::unique_lock<std::mutex> lock(_mutex);
 
     if (_is_run) {
-        auto now = boost::posix_time::microsec_clock::universal_time();
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        auto millis = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        //auto now = boost::posix_time::microsec_clock::universal_time();
 
         if (_queue.size() < LOG_MAX_QUEUE_SIZE) {
             _queue.push(std::make_tuple(level, module, message, now));

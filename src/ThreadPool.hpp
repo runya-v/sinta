@@ -1,3 +1,10 @@
+/*!
+ * \brief  Пул потоков с механизмом автобалансировки производительности.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \date   02.03.2013
+ */
+
+
 #pragma once
 
 
@@ -16,7 +23,7 @@
 
 
 namespace base {
-    
+
     class ThreadPool {
         std::string _name;
 
@@ -64,4 +71,7 @@ namespace base {
         ThreadPool(size_t threads = std::thread::hardware_concurrency(), const std::string &name = "undefined");
         ~ThreadPool();
     };
+
+    typedef std::shared_ptr<ThreadPool>  ThreadPoolPtr;
+    typedef std::weak_ptr<ThreadPool>    ThreadPoolWptr;
 } // namespace base

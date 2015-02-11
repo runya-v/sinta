@@ -1,3 +1,9 @@
+/*!
+ * \brief  Обёртка потоковой задачи.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \date   02.03.2013
+ */
+
 #pragma once
 
 #include <memory>
@@ -6,7 +12,11 @@
 
 
 namespace base {
-    
+    class Task;
+    typedef std::shared_ptr<Task> TaskPtr;
+    typedef std::function<void(const TaskPtr&)>   TaskHandle;
+
+
     class Task
         : public std::enable_shared_from_this<Task>
     {

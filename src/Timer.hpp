@@ -1,7 +1,25 @@
+/*!
+ * \brief  Обёртка для работы с таймером.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \date   02.03.2013
+ */
+
 #pragma once
+
+#include <chrono>
 
 
 namespace base {
+    typedef std::chrono::high_resolution_clock HighResolutionClock;
+    typedef HighResolutionClock::time_point    TimePoint;
+
+    typedef chr::nanoseconds  Nano;
+    typedef chr::microseconds Micro;
+    typedef chr::milliseconds Milli;
+    typedef chr::seconds      Secs;
+    typedef chr::minutes      Mins;
+    typedef chr::hours        Hours;
+
 
     class Timer {
         ThreadPtr _timer_thread;
@@ -28,4 +46,6 @@ namespace base {
             }
         }
     };
+
+    typedef std::shared_ptr<Timer> TimerPtr;
 } // namespace base

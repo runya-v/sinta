@@ -1,3 +1,9 @@
+/*!
+ * \brief  Система логирования.
+ * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \date   02.03.2013
+ */
+
 #pragma once
 
 #include <cstdint>
@@ -10,7 +16,7 @@
 #include <typeinfo>
 #include <tuple>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "base.hpp"
 #include "Singleton.hpp"
@@ -32,7 +38,8 @@ namespace base {
         };
 
     private:
-        typedef std::tuple<Level, std::string, std::string, boost::posix_time::ptime> QueueTask;
+        //typedef std::tuple<Level, std::string, std::string, boost::posix_time::ptime> QueueTask;
+        typedef std::tuple<Level, std::string, std::string, std::uint64_t> QueueTask;
         typedef std::queue<QueueTask> Queue;
 
         virtual void execute();

@@ -65,7 +65,7 @@ include_directories(${SRC_DIR})
 OPTION(ENABLE_TESTS "Enable TESTS support [default: ON]" ON)
 OPTION(ENABLE_CTPP2 "Enable CTPP2 support [default: ON]" ON)
 OPTION(ENABLE_CEF3  "Enable CEF3 support [default: ON]"  OFF)
-OPTION(ENABLE_WELDER_MODEL_WEB  "Enable Welder model [default: ON]"  ON)
+OPTION(ENABLE_WELDER_MODEL_WEB  "Enable Welder model [default: ON]"  OFF)
 
 
 # Поиск библиотек Boost версии старше 1.48
