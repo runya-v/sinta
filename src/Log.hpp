@@ -16,8 +16,6 @@
 #include <typeinfo>
 #include <tuple>
 
-//#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "base.hpp"
 #include "Singleton.hpp"
 
@@ -67,7 +65,6 @@ namespace base {
 
         bool _log_out;
         bool _log_out_file;
-        bool _log_file_compress;
         uint32_t _log_file_depth;
 
     public:
@@ -77,7 +74,6 @@ namespace base {
         void init(
             bool log_out,
             bool log_out_file,
-            bool log_file_compress = false,
             uint32_t log_file_depth = LOG_FILE_DEPTH);
         void print(const Level& level, const std::string& module, const std::string& message);
 

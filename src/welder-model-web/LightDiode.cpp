@@ -42,5 +42,5 @@ LightDiode::LightDiode(const std::string &text) {
 
 
 void LightDiode::light(bool on) {
-    hlayout;
+    //hlayout;
 }

@@ -6,14 +6,6 @@
 #include <ctime>
 #include <stdexcept>
 
-//#include <boost/filesystem.hpp>
-//#include <boost/format.hpp>
-//#include <boost/exception/diagnostic_information.hpp>
-//#include <boost/iostreams/filtering_stream.hpp>
-//#include <boost/iostreams/filter/zlib.hpp>
-//#include <boost/iostreams/copy.hpp>
-//#include <boost/lexical_cast.hpp>
-
 #include "Log.hpp"
 
 using namespace base;
@@ -23,34 +15,7 @@ using namespace base;
 #endif
 
 
-//namespace boost {
-//    void tss_cleanup_implemented(void)
-//    {}
-//
-//
-//    template <>
-//    inline std::string lexical_cast<std::string, Log::Level>(const Log::Level& value) {
-//        switch (value) {
-//            case TEST:
-//               return "TEST";
-//            case INFO:
-//               return "INFO";
-//            case DEBUG:
-//               return "DEBUG";
-//            case WARNING:
-//               return "WARNING";
-//            case ERROR:
-//                return "ERROR";
-//            case FATAL:
-//                return "FATAL";
-//            default:
-//                BOOST_THROW_EXCEPTION(boost::bad_lexical_cast());
-//        }
-//    }
-//}
-
-
-operator std::string (const Log::Level& value) {
+std::string level_name(const Log::Level& value) {
     switch (value) {
         case TEST:
            return "TEST";
@@ -70,20 +35,13 @@ operator std::string (const Log::Level& value) {
 }
 
 
-static std::string logFileName(std::uint32_t i, bool z) {
+static std::string LogFileName(std::uint32_t i) {
     time_t now = time(NULL);
     struct tm * ptm = localtime(&now);
-    char buffer[32];
+    char buf[32] = {0};
     // Format: Mo, 15.06.2009 20:20:00
-    strftime(buffer, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm);
-    std::stringstream ss;
-    ss << buffer << "-" << i << "." << (z ? "zippedlog" : "log");
-//    boost::format f = boost::format("%s-%u.%s")
-//        % buffer
-//        % i
-//        % (z ? "zippedlog" : "log")
-//        ;
-    return f.str();
+    strftime(buf, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm);
+    return (std::string(buf) + "-" + std::to_string(i) + ".log");
 }
 
 
@@ -94,7 +52,6 @@ Log::Log()
     , _is_run(false)
     , _log_out(false)
     , _log_out_file(true)
-    , _log_file_compress(false)
     , _log_file_depth(LOG_FILE_DEPTH)
 {
     start();
@@ -107,11 +64,10 @@ Log::~Log() {
 }
 
 
-void Log::init(bool log_out, bool log_out_file, bool log_file_compress, uint32_t log_file_depth) {
-    _log_out           = log_out;
-    _log_out_file      = log_out_file;
-    _log_file_compress = log_file_compress;
-    _log_file_depth    = LOG_FILE_DEPTH;
+void Log::init(bool log_out, bool log_out_file, uint32_t log_file_depth) {
+    _log_out        = log_out;
+    _log_out_file   = log_out_file;
+    _log_file_depth = LOG_FILE_DEPTH;
 }
 
 
@@ -131,26 +87,20 @@ void Log::execute() {
             task = _queue.front();
             _queue.pop();
         }
-        auto module  = std::get<0>(task);
-        auto level   = std::get<1>(task);
+        auto level   = std::get<0>(task);
+        auto module  = std::get<1>(task);
         auto message = std::get<2>(task);
         auto time    = std::get<3>(task);
 
         std::stringstream ss;
         ss << (++_file_line_number);
         ss << ". [" << time << "]";
+        ss << " [" << level_name(level) << "]";
         ss << " [" << module << "]";
-        ss << " [" << level << "]";
-        ss << " " << message << "\n"
-//        boost::format f = boost::format("%5u. [%s] [%s] [%s] %s\n")
-//            % boost::lexical_cast<std::string>(_file_line_number++)
-//            % boost::posix_time::to_simple_string(time)
-//            % boost::lexical_cast<std::string>(module)
-//            % boost::lexical_cast<std::string>(level)
-//            % message;
+        ss << " " << message << "\n";
 
         if (_log_out) {
-            std::cout << f.str() << std::flush;
+            std::cout << ss.str() << std::flush;
         }
 
         if (_log_out_file) {
@@ -159,7 +109,7 @@ void Log::execute() {
             }
 
             if (_file.is_open()) {
-                _file << f.str();
+                _file << ss.str();
                 _file_size = static_cast<std::uint32_t>(_file.tellp());
             }
         }
@@ -176,7 +126,7 @@ void Log::open() {
     if (_file.is_open()) {
         close();
     }
-    _file.open(logFileName(_file_number, false));
+    _file.open(LogFileName(_file_number));
 }
 
 
@@ -187,65 +137,33 @@ void Log::close() {
     _file.close();
 
     auto now = std::chrono::system_clock::now();
-
     struct dirent *epdf;
-
     DIR *dpdf = opendir("./");
+
     if (NULL not_eq dpdf) {
-        while (epdf = readdir(dpdf)) {
-          //printf("Filename: %s", epdf->d_name);
-          // std::out << epdf->d_name << std::endl;
-//        }
-//    }
-
-//    for (
-//        auto it = boost::filesystem::directory_iterator(boost::filesystem::path("."));
-//        it not_eq boost::filesystem::directory_iterator();
-//        ++it)
-//    {
-//        if (not boost::filesystem::is_regular_file(it->status())) {
-//            continue;
-//        }
-        if (DT_REG not_eq epdf->d_type) {
-            continue;
-        }
-
-        std::string name = epdf->d_name;
-        std::string ext = name.substr();
-        auto pos = name.find(".");
-
-        if (pos == std::string::npos) {
-            continue;
-        }
-        else {
-            std::cout << "found: \"" << s.substr(n) << "\" at " << n << '\n';
-        }
-
-        //boost::filesystem::path file_path(it->path());
-
-        if (file_path.extension() == ".log" or file_path.extension() == ".zlog") {
-            auto mod = std::chrono::system_clock::from_time_t(boost::filesystem::last_write_time(it->path()));
-
-            if (mod + std::chrono::hours(_log_file_depth) < now) {
-                boost::filesystem::remove(file_path);
-            }
-        }
-    }
-
-    if (_log_file_compress) {
-        std::ifstream ifs(logFileName(_file_number, false));
-        std::ofstream ofs(logFileName(_file_number, true), std::ios_base::out | std::ios_base::binary);
-
-        boost::iostreams::filtering_stream<boost::iostreams::output> zipper;
-
-        zipper.push(boost::iostreams::zlib_compressor());
-        zipper.push(ofs);
-
-        boost::iostreams::copy(ifs, zipper);
-
-        ifs.close();
-
-        boost::filesystem::remove(boost::filesystem::path(logFileName(_file_number, false)));
+		epdf = readdir(dpdf);
+		
+        while (epdf) {
+			if (DT_REG == epdf->d_type) {
+				std::string name = epdf->d_name;
+				std::string ext = name.substr();
+				auto pos = name.find(".");
+				
+				if ((pos not_eq std::string::npos) and (".log" == ext)) {
+					struct stat t_stat;
+					stat(name.c_str(), &t_stat);
+					struct tm *file_time = localtime(&t_stat.st_ctime);
+					auto mod = std::chrono::system_clock::from_time_t(mktime(file_time));
+					
+					if (mod + std::chrono::hours(_log_file_depth) < now) {
+						if (0 not_eq remove(name.c_str())) {
+							std::runtime_error("LOG ERROR: can`t remove file `" + name + "`.");
+						}
+					}
+				}
+			}
+			epdf = readdir(dpdf);
+		}
     }
     ++_file_number;
 }
@@ -257,17 +175,16 @@ void Log::print(const Log::Level& level, const std::string& module, const std::s
     if (_is_run) {
         auto now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
-        auto millis = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-        //auto now = boost::posix_time::microsec_clock::universal_time();
+        auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
         if (_queue.size() < LOG_MAX_QUEUE_SIZE) {
-            _queue.push(std::make_tuple(level, module, message, now));
+            _queue.push(std::make_tuple(level, module, message, millis));
         }
         else {
-            boost::format f = boost::format("Log max queue size exceeded! %d messages were dropped.") % _queue.size();
+            std::string err_msg = "Log max queue size exceeded! " + std::to_string(_queue.size()) + " messages were dropped.";
             Queue q;
             _queue.swap(q);
-            _queue.push(std::make_tuple(ERROR, "NONE", f.str(), now));
+            _queue.push(std::make_tuple(ERROR, "NONE", err_msg, millis));
         }
         _cond.notify_one();
     }
