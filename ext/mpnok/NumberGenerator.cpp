@@ -15,3 +15,8 @@ NumberGenerator::NumberGenerator(int count) {
         int random_variable = std::rand() % MAX_VALUE;
     }
 }
+
+
+NumberGenerator::~NumberGenerator() {
+
+}
