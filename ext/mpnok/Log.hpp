@@ -120,7 +120,7 @@ namespace base {
             Head(const Head &head);
 
             ~Head() {
-                base::Singleton<base::Log>::getInstance()->print(_level, _module, _stream->str().c_str());
+                base::Singleton<base::Log>::get()->print(_level, _module, _stream->str().c_str());
             }
 
             template<class Type>
@@ -153,7 +153,7 @@ namespace base {
 #define METHOD (__FUNC__)
 #define MODULE typeid(*this).name()
 
-#define LOG_TO_STDOUT base::Singleton<base::Log>::getInstance()->init(true, false);
+#define LOG_TO_STDOUT base::Singleton<base::Log>::get()->init(true, false);
 
 #define LOGM(level, method) base::LogSequence XAFTERX(log_, __LINE__)((level), (method)); XAFTERX(log_, __LINE__) << ""
 #define LOG(level) LOGM((level), METHOD)

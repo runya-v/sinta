@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 #include "NumberGenerator.hpp"
 
@@ -10,9 +11,9 @@ static const int MAX_VALUE = 10000;
 
 NumberGenerator::NumberGenerator(int count) {
     int c = (MIN_COUNT <= count and MAX_COUNT >= count) ? count : (MAX_COUNT * 0.5);
-    for(int i = 0; i < count; ++i) {
+    for(int i = 0; i < c; ++i) {
         std::srand(std::time(0));
-        int random_variable = std::rand() % MAX_VALUE;
+        std::cout << std::rand() % MAX_VALUE << "\n" << std::flush;
     }
 }
 

@@ -15,14 +15,14 @@ endif()
 # Общие флаги для всех сборок.
 add_definitions(
     -pedantic -pedantic-errors
-    -std=gnu++11
+    -pthread -std=gnu++11
     -pipe -fPIC
     -Wall -Wno-long-long -Wno-inline
     -finline-functions -finline-limit=2000
     --param large-function-growth=5000 --param inline-unit-growth=600
-    -D__STDC_LIMIT_MACROS=1 -I.
+    #-D__STDC_LIMIT_MACROS=1 -I.
     -D_GLIBCXX_USE_NANOSLEEP
-    -DDLL_PUBLIC=__attribute__\(\(visibility\(\"default\"\)\)\)
+    #-DDLL_PUBLIC=__attribute__\(\(visibility\(\"default\"\)\)\)
     )
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -48,28 +48,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 
-add_definitions(-DSRC_DIR="${SRC_DIR}")
+SET(CMAKE_STATIC_LINKER_FLAGS "Wl,-no-as-needed")
+set(CMAKE_SHARED_LINKER_FLAGS "Wl,-no-as-needed")
 
+add_definitions(-DSRC_DIR="${SRC_DIR}")
 
 # Указание общих настроек
 link_directories("/usr/lib")
 link_directories("/usr/local/lib")
 
-
 # Установка общих директорий включаемых файлов
 include_directories(${SRC_DIR})
 
-set(MPNOK_LIB "mp_nok")
-add_library(${MPNOK_LIB}
+set(MPNOK "mp-nok")
+add_executable(${MPNOK}
     Log.cpp
     Task.cpp
     ThreadPool.cpp
     Nok.cpp
     NumberGenerator.cpp
-    )
-
-set(MPNOK "mp-nok")
-add_executable(${MPNOK}
     main.cpp
     )
-target_link_libraries(${MPNOK} ${MPNOK_LIB})
+#target_link_libraries(${MPNOK} "-Wl, -no-as-needed")
+
+#g++ -pthread -std=c++11 main.cpp Log.cpp Task.cpp ThreadPool.cpp Nok.cpp NumberGenerator.cpp -Wl,-no-as-needed

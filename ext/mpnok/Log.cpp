@@ -55,6 +55,7 @@ Log::Log()
     , _log_out_file(true)
     , _log_file_depth(LOG_FILE_DEPTH)
 {
+    std::cout << "Log is init.\n" << std::flush;
     start();
 }
 
@@ -198,6 +199,7 @@ void Log::handleException(const std::exception &e) {
 
 
 void Log::start() {
+
     if (_thread) {
         stop();
     }

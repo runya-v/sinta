@@ -7,7 +7,7 @@
 class NumberGenerator {
     typedef std::shared_ptr<std::thread> ThreadPtr;
 
-    _ThreadPtr _thread;
+    ThreadPtr _thread;
 
 public:
     explicit NumberGenerator(int count);
