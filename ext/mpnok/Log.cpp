@@ -40,8 +40,7 @@ static std::string LogFileName(std::uint32_t i) {
     time_t now = time(NULL);
     struct tm * ptm = localtime(&now);
     char buf[32] = {0};
-    // Format: Mo, 15.06.2009 20:20:00
-    strftime(buf, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm);
+    strftime(buf, 32, "%a,%d.%m.%Y-%H:%M:%S", ptm); // Format: Mo, 15.06.2009 20:20:00
     return (std::string(buf) + "-" + std::to_string(i) + ".log");
 }
 
@@ -55,14 +54,14 @@ Log::Log()
     , _log_out_file(true)
     , _log_file_depth(LOG_FILE_DEPTH)
 {
-    std::cout << "Log is init.\n" << std::flush;
+    std::clog << "Log is init.\n" << std::flush;
     start();
 }
 
 
 Log::~Log() {
     stop();
-    std::cout << "Log is stopped.\n" << std::flush;
+    std::clog << "Log is stopped.\n" << std::flush;
 }
 
 
@@ -102,7 +101,7 @@ void Log::execute() {
         ss << " " << message << "\n";
 
         if (_log_out) {
-            std::cout << ss.str() << std::flush;
+            std::clog << ss.str() << std::flush;
         }
 
         if (_log_out_file) {
@@ -143,29 +142,29 @@ void Log::close() {
     DIR *dpdf = opendir("./");
 
     if (NULL not_eq dpdf) {
-		epdf = readdir(dpdf);
-		
+        epdf = readdir(dpdf);
+
         while (epdf) {
-			if (DT_REG == epdf->d_type) {
-				std::string name = epdf->d_name;
-				std::string ext = name.substr();
-				auto pos = name.find(".");
-				
-				if ((pos not_eq std::string::npos) and (".log" == ext)) {
-					struct stat t_stat;
-					stat(name.c_str(), &t_stat);
-					struct tm *file_time = localtime(&t_stat.st_ctime);
-					auto mod = std::chrono::system_clock::from_time_t(mktime(file_time));
-					
-					if (mod + std::chrono::hours(_log_file_depth) < now) {
-						if (0 not_eq remove(name.c_str())) {
-							std::runtime_error("LOG ERROR: can`t remove file `" + name + "`.");
-						}
-					}
-				}
-			}
-			epdf = readdir(dpdf);
-		}
+            if (DT_REG == epdf->d_type) {
+                std::string name = epdf->d_name;
+                std::string ext = name.substr();
+                auto pos = name.find(".");
+
+                if ((pos not_eq std::string::npos) and (".log" == ext)) {
+                    struct stat t_stat;
+                    stat(name.c_str(), &t_stat);
+                    struct tm *file_time = localtime(&t_stat.st_ctime);
+                    auto mod = std::chrono::system_clock::from_time_t(mktime(file_time));
+
+                    if (mod + std::chrono::hours(_log_file_depth) < now) {
+                        if (0 not_eq remove(name.c_str())) {
+                            std::runtime_error("LOG ERROR: can`t remove file `" + name + "`.");
+                        }
+                    }
+                }
+            }
+            epdf = readdir(dpdf);
+        }
     }
     ++_file_number;
 }

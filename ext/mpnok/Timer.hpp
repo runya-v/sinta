@@ -26,6 +26,13 @@ namespace base {
         ThreadPtr _timer_thread;
 
     public:
+        static std::uint64_t currentMillisecs() {
+            auto now = std::chrono::system_clock::now();
+            auto duration = now.time_since_epoch();
+            return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        }
+
+
         template<class Callable, class... Arguments>
         Timer(int after, bool async, Callable &&f, Arguments&&... args) {
             typedef std::function<typename std::result_of<Callable(Arguments...)>::type()> TimerTask;

@@ -41,34 +41,34 @@ endif()
 
 # Установка вспомогательных констант
 set(ROOT_DIR   ${CMAKE_CURRENT_SOURCE_DIR})
-set(SRC_DIR    ${ROOT_DIR}/src)
+set(SRC_DIR    ${ROOT_DIR})
 set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(LIB_DIR    ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
 
-SET(CMAKE_STATIC_LINKER_FLAGS "Wl,-no-as-needed")
+#set(CMAKE_STATIC_LINKER_FLAGS "Wl,-no-as-needed")
 set(CMAKE_SHARED_LINKER_FLAGS "Wl,-no-as-needed")
 
 add_definitions(-DSRC_DIR="${SRC_DIR}")
 
-# Указание общих настроек
-link_directories("/usr/lib")
-link_directories("/usr/local/lib")
-
 # Установка общих директорий включаемых файлов
 include_directories(${SRC_DIR})
 
-set(MPNOK "mp-nok")
-add_executable(${MPNOK}
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-pthread")
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "-pthread")
+
+set(MPNOK_LIB "mp_nok")
+add_library(${MPNOK_LIB} STATIC
     Log.cpp
     Task.cpp
     ThreadPool.cpp
     Nok.cpp
     NumberGenerator.cpp
-    main.cpp
+    StdoutToStdin.cpp
     )
-#target_link_libraries(${MPNOK} "-Wl, -no-as-needed")
-
-#g++ -pthread -std=c++11 main.cpp Log.cpp Task.cpp ThreadPool.cpp Nok.cpp NumberGenerator.cpp -Wl,-no-as-needed
+set(MPNOK "mp-nok")
+add_executable(${MPNOK} main.cpp)
+target_link_libraries(${MPNOK} ${MPNOK_LIB} "-Wl,-no-as-needed")
