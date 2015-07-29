@@ -4,7 +4,8 @@
 #  CEF3_LIBRARIES   - List of libraries when using CEF3.
 #  CEF3_FOUND       - True if CEF3 found.
 
-include(TakeComponent)
+include(${CMAKE_DIR}/TakeComponent.cmake)
+#include(TakeComponent)
 find_template(
     COMPONENT_NAME CEF3 
     INCLUDE_NAMES cef_version.h 

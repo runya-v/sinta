@@ -1,13 +1,7 @@
-set(BASE_LIB "base")
-add_library(${BASE_LIB}
-    Log.cpp
-    Exception.cpp
-    #Settings.cpp
-    #ThreadPool.cpp
-    #Task.cpp
-    )
-
-add_library("chart"
-    Chart.cpp
-    Demangle.cpp
-    )
+add_subdirectory(utils)
+add_subdirectory(welder-model-web)
+#add_subdirectory(web-client-app)
+add_subdirectory(tests)
+add_subdirectory(http-server)
+add_subdirectory(bc-robot)
+ 

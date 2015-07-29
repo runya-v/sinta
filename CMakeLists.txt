@@ -43,7 +43,9 @@ endif()
 set(ROOT_DIR   ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRC_DIR    ${ROOT_DIR}/src)
 set(EXT_DIR    ${ROOT_DIR}/ext)
+set(UTILS_DIR  ${SRC_DIR}/utils)
 set(BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_DIR  ${ROOT_DIR}/cmake)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BINARY_DIR}/${CMAKE_BUILD_TYPE}/lib)
@@ -58,7 +60,7 @@ link_directories("/usr/local/lib")
 
 
 # Установка общих директорий включаемых файлов
-include_directories(${SRC_DIR})
+include_directories(${UTILS_DIR})
 
 
 # Настройка опций сборки компонент
@@ -107,12 +109,12 @@ endif()
 
 # Поиск дополнительных библиотек
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}")
-include(TakeComponent)
+include(${CMAKE_DIR}/TakeComponent.cmake)
 
 
 # Включение в сборку компонент
 # Директорию test включается только, если определен макро ENABLE_TESTS=ON
-add_subdirectory("${SRC_DIR}")
+add_subdirectory(${UTILS_DIR})
 
 set(LOG_LIBS z ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_IOSTREAMS_LIBRARY})
 
@@ -131,24 +133,12 @@ if(ENABLE_TESTS)
     else()
         message(STATUS "Enable ALL tests")
     endif()
-    # Поиск конкретного указанного теста, в противном случае будут добавлены все тесты
-    #get_cmake_property(VARIABLE_NAMES VARIABLES)
-    #foreach (VAR_NAME ${VARIABLE_NAMES})
-    #    if (VAR_NAME MATCHES "^TEST")
-    #        message(STATUS "ALL_TESTS set to OFF; enable ${VAR_NAME}")
-    #        set(ALL_TESTS OFF)
-    #        set(TEST_${VAR_NAME} ON)
-    #    else()
-    #        message(STATUS "### ${VAR_NAME}")
-    #    endif()
-    #endforeach()
 
     enable_testing()
 
-    include(UTest)
+    include(${CMAKE_DIR}/UTest.cmake)
 
     # Инициализировать общие тесты
-    #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${TESTS_DIR})
     set(TESTS_DIR ${SRC_DIR}/tests)
     message(STATUS "TESTS_DIR: ${TESTS_DIR}")
     add_subdirectory("${TESTS_DIR}")
@@ -179,23 +169,6 @@ if(ENABLE_CTPP2)
 endif()
 
 if(ENABLE_CEF3)
-    #find_package(PkgConfig REQUIRED)
-    #pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-    #include_directories(${GTK3_INCLUDE_DIRS})
-    #link_directories(${GTK3_LIBRARY_DIRS})
-    #add_definitions(${GTK3_CFLAGS_OTHER})
-    #
-    #find_library(
-    #   UDEV_LIBRARIES
-    #   NAMES "libudev.so.0"
-    #   PATHS "/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu"
-    #   DOC "Path where the `libudev.so.0` libraries can be found"
-    #   )
-    #
-    #if(NOT UDEV_LIBRARIES)
-    #   message(FATAL_ERROR "ERROR: Cannot find `libudev.so.0`, try: `LIBUDEV=$(find /usr -name libudev\.so); sudo ln -s $LIBUDEV $LIBUDEV.0`, aborting")
-    #endif()
-
     set(CEF3_EXT_DIR "${EXT_DIR}/cef3")
     add_custom_target("build_cef3" ALL)
     add_custom_command(
