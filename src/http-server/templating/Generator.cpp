@@ -1,18 +1,18 @@
 #include <boost/format.hpp>
 
-#include <ctpp2/CTPP2Parser.hpp>
-#include <ctpp2/CTPP2ParserException.hpp>
-#include <ctpp2/CTPP2HashTable.hpp>
-#include <ctpp2/CTPP2VMDumper.hpp>
-#include <ctpp2/CTPP2FileSourceLoader.hpp>
-#include <ctpp2/CTPP2FileOutputCollector.hpp>
-#include <ctpp2/CTPP2VMOpcodes.h>
-#include <ctpp2/CTPP2VMFileLoader.hpp>
-#include <ctpp2/CTPP2JSONFileParser.hpp>
-#include <ctpp2/CTPP2VM.hpp>
-#include <ctpp2/CTPP2VMSTDLib.hpp>
-#include <ctpp2/CTPP2VMException.hpp>
-#include <ctpp2/CTPP2VMStackException.hpp>
+#include <CTPP2Parser.hpp>
+#include <CTPP2ParserException.hpp>
+#include <CTPP2HashTable.hpp>
+#include <CTPP2VMDumper.hpp>
+#include <CTPP2FileSourceLoader.hpp>
+#include <CTPP2FileOutputCollector.hpp>
+#include <CTPP2VMOpcodes.h>
+#include <CTPP2VMFileLoader.hpp>
+#include <CTPP2JSONFileParser.hpp>
+#include <CTPP2VM.hpp>
+#include <CTPP2VMSTDLib.hpp>
+#include <CTPP2VMException.hpp>
+#include <CTPP2VMStackException.hpp>
 
 #include "Log.hpp"
 #include "utility.hpp"
@@ -27,12 +27,12 @@ const int CTPP_MAX_HANDLERS = 100;
 
 
 Generator::Generator(
-    const base::bfs::path &file_ct2, 
-    const base::bfs::path &file_json, 
-    const base::bfs::path &file_html, 
-    bool remove) 
+    const base::bfs::path &file_ct2,
+    const base::bfs::path &file_json,
+    const base::bfs::path &file_html,
+    bool remove)
     : _remove(remove)
-    , _path_result(file_html)  
+    , _path_result(file_html)
     , _syscall_factory(CTPP_MAX_HANDLERS)
     , _fn_file_load(std::make_shared<TextFileLoader>())
 {
@@ -45,24 +45,24 @@ Generator::Generator(
     const CTPP::VMMemoryCore *vm_memory_core = loader.GetCore();
     CTPP::CDT hash;
     CTPP::CTPP2JSONFileParser json_file_parser(hash);
-    
+
     try {
         json_file_parser.Parse(file_json.string().c_str());
         CTPP::VM vm(&syscall_factory);
         vm.Init(vm_memory_core, &output_collector, nullptr);
         std::uint32_t ip = 0;
-        vm.Run(vm_memory_core, &output_collector, ip, hash, nullptr);   
-        LOG(INFO) << "Generate html `" << file_html.string() << "`.";                                    
+        vm.Run(vm_memory_core, &output_collector, ip, hash, nullptr);
+        LOG(INFO) << "Generate html `" << file_html.string() << "`.";
         CTPP::STDLibInitializer::DestroyLibrary(syscall_factory);
     }
-    catch(CTPP::CDTTypeCastException &e) { 
-        LOG(ERROR) << "Type Cast " << e.what();                                    
+    catch(CTPP::CDTTypeCastException &e) {
+        LOG(ERROR) << "Type Cast " << e.what();
     }
-    catch(CTPP::CDTAccessException &e) { 
-        LOG(ERROR) << "Array index out of bounds: `" << e.what() << "`";                   
+    catch(CTPP::CDTAccessException &e) {
+        LOG(ERROR) << "Array index out of bounds: `" << e.what() << "`";
     }
-    catch(CTPP::IllegalOpcode &e) { 
-        LOG(ERROR) << "Illegal opcode " << e.GetOpcode() << " at " << e.GetIP(); 
+    catch(CTPP::IllegalOpcode &e) {
+        LOG(ERROR) << "Illegal opcode " << e.GetOpcode() << " at " << e.GetIP();
     }
     catch(CTPP::InvalidSyscall &e) {
         if (e.GetIP() not_eq 0) {
@@ -79,36 +79,36 @@ Generator::Generator(
     }
     catch(CTPP::InvalidCall &e) {
         CTPP::VMDebugInfo debug_info(e.GetDebugInfo());
-        LOG(ERROR) 
+        LOG(ERROR)
             << "at " << e.GetIP() << ": "
             << "Invalid block name `" << e.what() << "` "
             << "in file `" << e.GetSourceName() << "`, "
             << "Line " << debug_info.GetLine()
             << "Pos " << debug_info.GetLinePos();
     }
-    catch(CTPP::CodeSegmentOverrun &e) { 
+    catch(CTPP::CodeSegmentOverrun &e) {
         LOG(ERROR) << e.what() << " at " << e.GetIP();
     }
-    catch(CTPP::StackOverflow &e) { 
+    catch(CTPP::StackOverflow &e) {
         LOG(ERROR) << "Stack overflow at " << e.GetIP();
     }
-    catch(CTPP::StackUnderflow &e) { 
+    catch(CTPP::StackUnderflow &e) {
         LOG(ERROR) << "Stack underflow at " << e.GetIP();
     }
-    catch(CTPP::ExecutionLimitReached &e) { 
+    catch(CTPP::ExecutionLimitReached &e) {
         LOG(ERROR) << "Execution limit reached at " << e.GetIP();
     }
-    catch(CTPP::VMException &e) { 
+    catch(CTPP::VMException &e) {
         LOG(ERROR) << "VM generic exception: " << e.what() << " at " << e.GetIP();
     }
-    catch(CTPP::CTPPLogicError &e) { 
+    catch(CTPP::CTPPLogicError &e) {
         LOG(ERROR) << e.what();
     }
-    catch(CTPP::CTPPUnixException &e) { 
+    catch(CTPP::CTPPUnixException &e) {
         LOG(ERROR) << "I/O in " << e.what() << ": " << strerror(e.ErrNo());
     }
-    catch(CTPP::CTPPException &e) { 
-        LOG(ERROR) << "CTPP Generic exception: " << e.what();                      
+    catch(CTPP::CTPPException &e) {
+        LOG(ERROR) << "CTPP Generic exception: " << e.what();
     }
     catch(...) {
         LOG(ERROR) << "Undefined.";
