@@ -2,8 +2,6 @@
 
 SRC_NAME="ctpp2-2.8.3"
 
-
-
 if [[ ! -d $SRC_NAME ]]; then
     echo "Extract `$SRC_NAME.tar.gz.`"
     tar xzvf $SRC_NAME.tar.gz
@@ -17,7 +15,7 @@ else
         mkdir bld
         pushd bld
         cmake ..
-        make -j$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
+        make -j$(($(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)+1))
         popd
         popd
     fi

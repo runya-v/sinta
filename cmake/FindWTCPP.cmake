@@ -5,7 +5,7 @@
 #  WTCPP_LIBRARIES            - List of libraries when using WTCPP.
 #  WTCPP_FOUND                - True if WTCPP found.
 
-include(TakeComponent)
+include(${CMAKE_DIR}/TakeComponent)
 find_template(COMPONENT_NAME WT           INCLUDE_NAMES "Wt/WApplication" LIB_NAMES wt           libwt          )
 find_template(COMPONENT_NAME WTHTTP       INCLUDE_NAMES "Wt/WApplication" LIB_NAMES wthttp       libwthttp      )
 find_template(COMPONENT_NAME WTDBO        INCLUDE_NAMES "Wt/WApplication" LIB_NAMES wtdbo        libwdbo        )

@@ -5,9 +5,8 @@
 #  CTPP2_FOUND       - True if CPPCMS found.
 
 include(${CMAKE_DIR}/TakeComponent.cmake)
-#include(TakeComponent)
 find_template(
-    COMPONENT_NAME CTPP2 
-    INCLUDE_NAMES ctpp2/CDT.hpp 
+    COMPONENT_NAME CTPP2
+    INCLUDE_NAMES ctpp2/CDT.hpp
     LIB_NAMES ctpp2 libctpp2
     )

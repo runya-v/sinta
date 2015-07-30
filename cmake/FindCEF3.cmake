@@ -5,9 +5,8 @@
 #  CEF3_FOUND       - True if CEF3 found.
 
 include(${CMAKE_DIR}/TakeComponent.cmake)
-#include(TakeComponent)
 find_template(
-    COMPONENT_NAME CEF3 
-    INCLUDE_NAMES cef_version.h 
+    COMPONENT_NAME CEF3
+    INCLUDE_NAMES cef_version.h
     LIB_NAMES libcef.so libffmpegsumo.so
     )

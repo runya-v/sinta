@@ -67,6 +67,7 @@ include_directories(${UTILS_DIR})
 OPTION(ENABLE_TESTS "Enable TESTS support [default: ON]" ON)
 OPTION(ENABLE_CTPP2 "Enable CTPP2 support [default: ON]" ON)
 OPTION(ENABLE_CEF3  "Enable CEF3 support [default: ON]"  OFF)
+OPTION(ENABLE_GUMBO "Enable GUMBO support [default: ON]"  OFF)
 OPTION(ENABLE_WELDER_MODEL_WEB  "Enable Welder model [default: ON]"  OFF)
 
 
@@ -192,6 +193,24 @@ if(ENABLE_CEF3)
     message(STATUS "CEF3 includes dir: `${CEF3_EXT_INCS_DIR}`")
 
     add_subdirectory("${WEB_CLIENT_APP_DIR}")
+endif()
+
+if(ENABLE_GUMBO)
+    set(GUMBO_EXT_DIR "${EXT_DIR}/gumbo")
+    add_custom_target("build_gumbo" ALL)
+    add_custom_command(
+        TARGET "build_gumbo"
+        WORKING_DIRECTORY "${GUMBO_EXT_DIR}"
+        COMMAND "./build.sh"
+        DEPENDS "gumbo-parser-master"
+        )
+
+    set(GUMBO_EXT_LIBS_DIR "${GUMBO_EXT_DIR}/gumbo-parser-master/.lib")
+    link_directories("${GUMBO_EXT_LIBS_DIR}")
+    message(STATUS "GUMBO libraries dir: `${GUMBO_EXT_LIBS_DIR}`")
+    set(GUMBO_EXT_INCS_DIR "${GUMBO_EXT_DIR}/gumbo-parser-master/src")
+    include_directories("${GUMBO_EXT_INCS_DIR}")
+    message(STATUS "GUMBO includes dir: `${GUMBO_EXT_INCS_DIR}`")
 endif()
 
 if(ENABLE_WELDER_MODEL_WEB)
