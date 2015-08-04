@@ -23,7 +23,6 @@ namespace tmplt {
     public:
         explicit Compiler(const base::bfs::path &&fswr);
         
-        operator const std::string&() const;
-        operator const std::string&();
+        const std::string& result() const;
     };
 } // tmplt

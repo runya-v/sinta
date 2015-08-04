@@ -61,11 +61,6 @@ Compiler::Compiler(const base::bfs::path &&fswr) {
 }
 
 
-Compiler::operator const std::string&() const {
-    return (*_result);
-}
-
-
-Compiler::operator const std::string&() {
+const std::string& Compiler::result() const {
     return (*_result);
 }

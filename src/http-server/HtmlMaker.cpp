@@ -1,5 +1,6 @@
 #include "HtmlMaker.hpp"
 #include "Log.hpp"
+#include "Compiler.hpp"
 
 using namespace http_server;
 
@@ -21,19 +22,15 @@ struct CheckExistsComponent {
         }
     }
     
-    operator bool () {
+    bool exists() {
         return _is_exists;
     }
 
-    operator const std::string& () {
+    std::string result() {
         return _path.string();
     }
- 
-    operator const base::bfs::path& () {
-        return _path;
-    }
 
-    operator std::time_t () {
+    std::time_t fileTime() {
         return _file_time;
     }
 };
@@ -48,20 +45,19 @@ HtmlMaker::HtmlMaker(const std::string &need_html_file, bool remove)
         CheckExistsComponent check_tmpl(base::bfs::path(path_stem + ".tmpl"));
         CheckExistsComponent check_json(base::bfs::path(path_stem + ".json"));
         
-        if (check_tmpl and check_json) {
+        if (check_tmpl.exists() and check_json.exists()) {
             CheckExistsComponent check_html(need_path);
             
-            bool is_regen = not check_html or (
-                check_html and (
-                    (time_t)check_html < (time_t)check_tmpl or 
-                    (time_t)check_html < (time_t)check_json
+            bool is_regen = not check_html.exists() or (
+                check_html.exists() and (
+                    check_html.fileTime() < check_tmpl.fileTime() or 
+                    check_html.fileTime() < check_json.fileTime()
                 )
             );
             
-            if (is_regen)
-            { 
-                tmplt::Compiler cmplr(check_tmpl);
-                _html_gen.reset(new tmplt::Generator(base::bfs::path(cmplr), check_json, need_path, remove));
+            if (is_regen) { 
+                tmplt::Compiler cmplr(base::bfs::path(check_tmpl.result()));
+                _html_gen.reset(new tmplt::Generator(cmplr.result(), check_json.result(), need_path, remove));
                 LOG(INFO) << "Generate `" << std::string(*_html_gen) << "`";
             }
         }
