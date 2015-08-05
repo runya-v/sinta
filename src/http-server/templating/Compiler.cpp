@@ -13,7 +13,7 @@
 using namespace tmplt;
 
 
-Compiler::Compiler(const base::bfs::path &&fswr) {
+Compiler::Compiler(const std::string &&fswr) {
     CTPP::VMOpcodeCollector vm_opcode_collector;
     CTPP::StaticText sys_calls;
     CTPP::StaticData static_data;
@@ -23,8 +23,8 @@ Compiler::Compiler(const base::bfs::path &&fswr) {
 
     try {
         CTPP::CTPP2FileSourceLoader source_loader;
-        source_loader.LoadTemplate(fswr.string().c_str());
-        CTPP::CTPP2Parser parser(&source_loader, &compiler, fswr.string());
+        source_loader.LoadTemplate(fswr.c_str());
+        CTPP::CTPP2Parser parser(&source_loader, &compiler, fswr);
         parser.Compile();
     }
     catch(CTPP::CTPPLogicError &e) {
@@ -56,11 +56,12 @@ Compiler::Compiler(const base::bfs::path &&fswr) {
     uint32_t size = 0;
     const CTPP::VMExecutable *program_core = dumper.GetExecutable(size);
     const char *write_ptr = reinterpret_cast<const char*>(program_core);
-    std::string file_ct2 = (fswr.parent_path() / fswr.stem()).string() + ".ct2";
+    base::bfs::path fswr_path = fswr;
+    std::string file_ct2 = (fswr_path.parent_path() / fswr_path.stem()).string() + ".ct2";
     _result.reset(new FileSaver(write_ptr, size, file_ct2, true));
 }
 
 
-const std::string& Compiler::result() const {
+const std::string& Compiler::string() const {
     return (*_result);
 }

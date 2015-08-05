@@ -26,7 +26,7 @@ struct CheckExistsComponent {
         return _is_exists;
     }
 
-    std::string result() {
+    std::string string() {
         return _path.string();
     }
 
@@ -56,8 +56,8 @@ HtmlMaker::HtmlMaker(const std::string &need_html_file, bool remove)
             );
             
             if (is_regen) { 
-                tmplt::Compiler cmplr(base::bfs::path(check_tmpl.result()));
-                _html_gen.reset(new tmplt::Generator(cmplr.result(), check_json.result(), need_path, remove));
+                tmplt::Compiler cmplr(check_tmpl.string());
+                _html_gen.reset(new tmplt::Generator(cmplr.string(), check_json.string(), need_path, remove));
                 LOG(INFO) << "Generate `" << std::string(*_html_gen) << "`";
             }
         }
@@ -68,7 +68,7 @@ HtmlMaker::HtmlMaker(const std::string &need_html_file, bool remove)
 }
 
 
-HtmlMaker::operator const std::string() {
+const std::string& HtmlMaker::string() {
     if (_html_gen) {
         return *_html_gen;
     }

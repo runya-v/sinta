@@ -17,6 +17,6 @@ namespace http_server {
     public:
         HtmlMaker(const std::string &need_html_file, bool remove = false);
         
-        operator const std::string();
+        const std::string& string();
     };
 } // namespace http_server

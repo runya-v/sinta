@@ -21,8 +21,8 @@ namespace tmplt {
         FileSaverPtr _result;
         
     public:
-        explicit Compiler(const base::bfs::path &&fswr);
+        explicit Compiler(const std::string &&fswr);
         
-        const std::string& result() const;
+        const std::string& string() const;
     };
 } // tmplt
