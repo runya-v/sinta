@@ -33,7 +33,7 @@ target_link_libraries(${APP_BIN}
     ${APP_LIB}
     templating
     ctpp2
-    base
+    log
     pthread
     ${Boost_THREAD_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
@@ -44,7 +44,7 @@ target_link_libraries(${APP_BIN}
     )
 
 if(ENABLE_TESTS)
-    add_unit_test(ut_ctpp_html base http_server templating ctpp2 ${LOG_LIBS})
-    add_unit_test(ut_ctpp_file_load base http_server templating ctpp2 ${LOG_LIBS})
+    add_unit_test(ut_ctpp_html log http_server templating ctpp2 ${LOG_LIBS})
+    add_unit_test(ut_ctpp_file_load log http_server templating ctpp2 ${LOG_LIBS})
 endif(ENABLE_TESTS)
 

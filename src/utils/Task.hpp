@@ -1,6 +1,6 @@
 /*!
  * \brief  Обёртка потоковой задачи.
- * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \author R.N.Velichko rostislav.vel@gmail.com
  * \date   02.03.2013
  */
 
@@ -11,31 +11,28 @@
 #include "base.hpp"
 
 
-namespace base {
-    class Task;
-    typedef std::shared_ptr<Task> TaskPtr;
-    typedef std::function<void(const TaskPtr&)>   TaskHandle;
+namespace utils {
 
+class Task : public std::enable_shared_from_this<Task> {
+  TimePoint _create_time;
 
-    class Task
-        : public std::enable_shared_from_this<Task>
-    {
-        TimePoint _create_time;
+protected:
+  std::string _data;
+  TaskHandle  _task_handle_exec;
+  Handle      _handle_exec;
+  Handle      _handle_next;
 
-    protected:
-        std::string _data;
-        TaskHandle  _task_handle_exec;
-        Handle      _handle_exec;
-        Handle      _handle_next;
+public:
+  typedef std::shared_ptr<Task>               TaskPtr;
+  typedef std::function<void(const TaskPtr&)> TaskHandle;
 
-    public:
-        explicit Task(Handle &&handle_exec);
-        explicit Task(TaskHandle &&handle_exec);
-        ~Task();
+  explicit Task(Handle &&handle_exec);
+  explicit Task(TaskHandle &&handle_exec);
+  ~Task();
 
-        void setNextTaskHandle(Handle &&handle_next);
-        void execute(const TaskPtr &task);
-        std::string& getData();
-        std::uint64_t getTimeInterval();
-    };
-} // namespace base
+  void setNextTaskHandle(Handle &&handle_next);
+  void execute(const TaskPtr &task);
+  std::string& getData();
+  uint64_t getTimeInterval();
+};
+} // namespace

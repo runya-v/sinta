@@ -11,6 +11,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <map>
 
 #include "Log.hpp"
 

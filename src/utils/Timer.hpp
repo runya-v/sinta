@@ -1,51 +1,49 @@
 /*!
  * \brief  Обёртка для работы с таймером.
- * \author Rostislav Velichko. e: rostislav.vel@gmail.com
+ * \author R.N.Velichko rostislav.vel@gmail.com
  * \date   02.03.2013
  */
 
 #pragma once
 
 #include <chrono>
+#include <thread>
 
 
-namespace base {
-    typedef std::chrono::high_resolution_clock HighResolutionClock;
-    typedef HighResolutionClock::time_point    TimePoint;
+namespace chr  = std::chrono;
 
-    typedef chr::nanoseconds  Nano;
-    typedef chr::microseconds Micro;
-    typedef chr::milliseconds Milli;
-    typedef chr::seconds      Secs;
-    typedef chr::minutes      Mins;
-    typedef chr::hours        Hours;
+namespace utils {
 
+class Timer {
+  std::atomic_flag             is_run_; ///< Атомарный флаг
+  std::shared_ptr<std::thread> thread_; ///< Поток цклического таймера
 
-    class Timer {
-        ThreadPtr _timer_thread;
+public:
+  template<class Callable, class... Arguments>
+  Timer(chr::milliseconds sleep, bool async, Callable &&f, Arguments&&... args) {
+    auto task(std::bind(std::forward<Callable>(f), std::forward<Arguments>(args)...));
+    auto weit = [&]() {
+      std::this_thread::sleep_for(sleep);
+      task();
+    }
 
-    public:
-        template<class Callable, class... Arguments>
-        Timer(int after, bool async, Callable &&f, Arguments&&... args) {
-            typedef std::function<typename std::result_of<Callable(Arguments...)>::type()> TimerTask;
-
-            TimerTask task(std::bind(std::forward<Callable>(f), std::forward<Arguments>(args)...));
-
-            if (async) {
-                auto timer_run = [after, task]() {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(after));
-                    task();
-                };
-
-                _timer_thread = std::make_shared<std::thread>(imer_run);
-                _timer_thread->detach();
-            }
-            else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(after));
-                task();
-            }
+    if (async) {
+      auto run = [this, sleep, task]() {
+        while (is_run_.test_and_set(std::memory_order_acquire)) {
+          weit();
         }
-    };
+      };
+      is_run_.test_and_set(std::memory_order_acquire);
+      thread_ = std::make_shared<std::thread>(run);
+    }
+    else {
+      weit();
+    }
+  }
 
-    typedef std::shared_ptr<Timer> TimerPtr;
-} // namespace base
+  ~Timer() {
+    is_run_.clear(std::memory_order_release);
+    thread_->join();
+  }
+};
+} // namespace

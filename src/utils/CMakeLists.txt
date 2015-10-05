@@ -1,13 +1,12 @@
-set(BASE_LIB "base")
-add_library(${BASE_LIB}
-    Log.cpp
-    Exception.cpp
-    #Settings.cpp
-    #ThreadPool.cpp
-    #Task.cpp
-    )
+add_library(log STATIC
+  Log.cpp
+  )
 
-add_library("chart"
-    Chart.cpp
-    Demangle.cpp
-    )
+add_library(chart STATIC
+  Chart.cpp
+  Demangle.cpp
+  )
+
+add_library(thread_pool STATIC
+  ThreadPool.cpp
+  )

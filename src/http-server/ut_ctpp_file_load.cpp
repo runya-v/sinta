@@ -129,7 +129,7 @@ struct TestGenerate {
         tmplt::FileSaver file_json(TEST_JSON, sizeof(TEST_JSON) - 1,           (cur_path / "test.json").string());
         tmplt::FileSaver file_text(TEST_TEXT_FILE, sizeof(TEST_TEXT_FILE) - 1, (cur_path / "test.txt").string());
         http_server::HtmlMaker make((cur_path / "test.html").string());
-        std::string file_make = make;
+        std::string file_make = make.string();
         tmplt::FileContent fcont(file_make);
         BOOST_CHECK_EQUAL(std::string(fcont), std::string(RESULT));
     }

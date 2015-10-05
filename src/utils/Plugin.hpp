@@ -6,110 +6,93 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class MyPlugin
-//     : public Plugin {
+//   : public Plugin {
 // public:
-//     MyPlugin() {
-//     }
+//   MyPlugin()
+//   {}
 // } my_plugin;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 #include <string>
 #include <map>
 
-
 #define OPEN_FUNC_NAME "Get"
+
+namespace utils {
 
 class Config;
 class Plugin;
-
+} // namespace
 
 extern "C" {
-    //! \brief Типы получения объекта загруженного плагина.
-    typedef Plugin*(*GetPluginFunc)(Plugin *parent, const char *name, int argc, char **argv, char **env);
+  //! \brief Типы получения объекта загруженного плагина.
+  typedef utils::Plugin*(*GetPluginFunc)(utils::Plugin *parent, const char *name, int argc, char **argv, char **env);
 
-    /*!
-     * \brief Метод получения объекта из загруженной библиотеки и его инициализации
-     * \param parent Указатель на базовый плагин
-     * \param name   Имя загруженной библиотеки (полный путь)
-     * \param argc   Количество аргументов
-     * \param argv   Массив аргументов
-     * \param env    Массив переменных окружения
-     */
-    Plugin* Get(Plugin *parent, const char *name, int argc, char **argv, char **env);
+  /*!
+   * \brief Метод получения объекта из загруженной библиотеки и его инициализации
+   * \param parent Указатель на базовый плагин
+   * \param name   Имя загруженной библиотеки (полный путь)
+   * \param argc   Количество аргументов
+   * \param argv   Массив аргументов
+   * \param env    Массив переменных окружения
+   */
+  utils::Plugin* Get(utils::Plugin *parent, const char *name, int argc, char **argv, char **env);
 } // extern "C"
 
 
+namespace utils {
+
 class Plugin {
-    //! \brief Хендлер загруженного плагина.
-    #ifdef _WIN32
-    typedef HINSTANCE Handler;
-    #else // _WIN32
-    typedef void* Handler;
-    #endif // _WIN32
+  //! \brief Хендлер загруженного плагина.
+  typedef void* Handler;
 
-    //! \brief Типы контейнера загруженных плагинов.
-    typedef std::pair< Handler, Plugin* > Lib;
-    typedef std::map< std::string, Lib >  Plugins;
-    typedef Plugins::iterator             PluginIter;
-    typedef Plugins::value_type           PluginValue;
+  //! \brief Типы контейнера загруженных плагинов.
+  typedef std::pair<Handler, Plugin*> Lib;
+  typedef std::map<std::string, Lib>  Plugins;
+  typedef Plugins::iterator           PluginIter;
+  typedef Plugins::value_type         PluginValue;
 
-    Plugins _plugins;
-
-    /*!
-     * \brief Метод инициализации загруженного плагина
-     * \param parent Указатель на базовый плагин
-     * \param name   Имя загруженной библиотеки (полный путь)
-     * \param argc   Количество аргументов
-     * \param argv   Массив аргументов
-     * \param env    Массив переменных окружения
-     */
-    void init(Plugin *parent, const std::string &name, int argc, char **argv, char **env);
-
-    friend class Config;
-
-    /*!
-     * \brief Метод загрузки и запуска единичного плагина
-     * \param lib_path Имя плагина
-     */
-    void loadLibrary(const std::string &lib_path);
+  Plugins _plugins;
 
 protected:
-    Plugin      *_parent;
-    std::string _name;
-    int         _argc;
-    char        **_argv;
-    char        **_env;
+  Plugin      *_parent; ///< Указатель на базовый плагин
+  std::string _name;    ///< Имя загруженной библиотеки (полный путь)
+  int         _argc;    ///< Количество аргументов
+  char        **_argv;  ///< Массив аргументов
+  char        **_env;   ///< Массив переменных окружения
 
 public:
-    static Plugin *s_plugin;
+  friend class Config;
 
-    virtual bool execute() = 0;
+  static Plugin *s_plugin;
 
-    Plugin();
-    virtual ~Plugin();
+  virtual bool execute() = 0;
 
-    /*!
-     * \brief Метод загрузки плагинов из указанной директории
-     * \param lib_path Имя директории содержащей плагины
-     */
-    void load(const std::string &lib_path = ".");
+  Plugin();
+  virtual ~Plugin();
 
-    /*!
-     * \brief Метод загрузки, инициализации и запуска плагина
-     * \param name Имя загружзаемой библиотеки (полный путь)
-     */
-    Plugin* get(const std::string &name);
+  /*!
+   * \brief Метод загрузки плагинов из указанной директории
+   * \param lib_path Имя директории содержащей плагины
+   */
+  void load(const std::string &lib_path = ".");
 
-    /*!
-     * \brief Метод выгрузки плагина
-     * \param name Имя загруженной библиотеки (сохраняется в параметрах объекта плагина)
-     */
-    bool close(const std::string &name);
+  /*!
+   * \brief Метод загрузки, инициализации и запуска плагина
+   * \param name Имя загружзаемой библиотеки (полный путь)
+   */
+  Plugin* get(const std::string &name);
 
-    //! \brief Метод выгрузки плагинов.
-    void close();
+  /*!
+   * \brief Метод выгрузки плагина
+   * \param name Имя загруженной библиотеки (сохраняется в параметрах объекта плагина)
+   */
+  bool close(const std::string &name);
 
-    //! \brief Метод получения текущего количества загруженных плагинов.
-    std::size_t size();
+  //! \brief Метод выгрузки плагинов.
+  void close();
+
+  //! \brief Метод получения текущего количества загруженных плагинов.
+  std::size_t size();
 };
+} // namespace
