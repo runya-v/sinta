@@ -1,270 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Страница в разработке.</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				background-color: rgb(200,200,200);
-				margin: 0px;
-				overflow: hidden;
-			}
+<head>
+	<meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
+	<title>Наработки</title>
+	<script src="scripts/raphael.min.js"></script>
+	<script src="scripts/three.min.js"></script>
+	<script src="scripts/CSS3DRenderer.js"></script>
+	<script src="scripts/Bird.js"></script>
+	<script src="scripts/Boid.js"></script>
+	<style>
+		html, body {
+			overflow: hidden;
+			width   : 100%;
+			height  : 100%;
+			margin  : 0;
+			padding : 0;
+		}
 
-			#info {
-				position: absolute;
-				top: 0px; width: 100%;
-				color: #0000ff;
-				padding: 5px;
-				font-family:Monospace;
-				font-size:20px;
-				font-weight: bold;
-				text-align:center;
-			}
-
-			a {
-				color: #ffff7f;
-			}
-		</style>
-	</head>
-	<body>
-        <div id="container"></div>
-		<script src="scripts/three.min.js"></script>
-		<script src="scripts/CSS3DRenderer.js"></script>
-		<script src="scripts/Bird.js"></script>
-		<script src="scripts/Boid.js"></script>
-
-        <div id="info"><strong>Страница в разработке</strong></div>
-
-		<script>
-			var camera; 
-            var scene; 
-            var renderer;
-            var birds; 
-            var bird;
-			var texture_placeholder;
-			var isUserInteracting = false;
-			var onMouseDownMouseX = 0; 
-            var onMouseDownMouseY = 0;
-            var onMouseDownLon = 0;
-            var onMouseDownLat = 0;
-			var lon = 90;
-			var lat = 0; 
-			var phi = 0;
-            var theta = 0;
-			var target = new THREE.Vector3();
-
-			init();
-            animate();
-
-			function init() {
-				var container;
-                var mesh;
-
-				container = document.getElementById( 'container' );
-				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
-				scene = new THREE.Scene();
-
-				texture_placeholder = document.createElement( 'canvas' );
-				texture_placeholder.width = 128;
-				texture_placeholder.height = 128;
-
-				var context = texture_placeholder.getContext( '2d' );
-				context.fillStyle = 'rgb( 200, 200, 200 )';
-				context.fillRect( 0, 0, texture_placeholder.width, texture_placeholder.height );
-
-				var materials = [
-					loadTexture( 'images/skybox/px.jpg' ), // right
-					loadTexture( 'images/skybox/nx.jpg' ), // left
-					loadTexture( 'images/skybox/py.jpg' ), // top
-					loadTexture( 'images/skybox/ny.jpg' ), // bottom
-					loadTexture( 'images/skybox/pz.jpg' ), // back
-					loadTexture( 'images/skybox/nz.jpg' )  // front
-				];
-
-				mesh = new THREE.Mesh(
-                    new THREE.CubeGeometry(1000, 1000, 1000, 10, 10, 10), 
-                    new THREE.MeshFaceMaterial(materials));
-				mesh.scale.x = -1;
-				scene.add(mesh);
-                
-				renderer = new THREE.CanvasRenderer();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-				container.appendChild( renderer.domElement );
-
-				document.addEventListener('mousedown',  onDocumentMouseDown,  false);
-				document.addEventListener('mousemove',  onDocumentMouseMove,  false);
-				document.addEventListener('mouseup',    onDocumentMouseUp,    false);
-				document.addEventListener('mousewheel', onDocumentMouseWheel, false);
-				document.addEventListener('touchstart', onDocumentTouchStart, false);
-				document.addEventListener('touchmove',  onDocumentTouchMove,  false);
-
-				window.addEventListener('resize', onWindowResize, false);
-
-   				birds = [];
-				boids = [];
-
-				for (var i = 0; i < 300; i++) {
-					var boid = boids[ i ] = new Boid();
-					boid.position.x = Math.random() * 400 - 200;
-					boid.position.y = Math.random() * 400 - 200;
-					boid.position.z = Math.random() * 400 - 200;
-					boid.velocity.x = Math.random() * 2 - 1;
-					boid.velocity.y = Math.random() * 2 - 1;
-					boid.velocity.z = Math.random() * 2 - 1;
-					boid.setAvoidWalls( true );
-					boid.setWorldSize(500, 500, 400);
-					bird = birds[i] = new THREE.Mesh( 
-                        new Bird(), 
-                        new THREE.MeshBasicMaterial({ color:Math.random() * 0xffffff, side: THREE.DoubleSide }));
-					bird.position = boids[i].position;
-					bird.phase = Math.floor(Math.random() * 62.83);
-
-					scene.add(bird);
-				}
-			}
-
-			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				render();
-			}
-
-			function loadTexture( path ) {
-				var texture = new THREE.Texture( texture_placeholder );
-				var material = new THREE.MeshBasicMaterial( { map: texture, overdraw: true } );
-				var image = new Image();
-                
-				image.onload = function () {
-					texture.needsUpdate = true;
-					material.map.image = this;
-					render();
-				};
-				image.src = path;
-
-				return material;
-			}
-
-			function onDocumentMouseDown( event ) {
-				event.preventDefault();
-
-				isUserInteracting = true;
-
-				onPointerDownPointerX = event.clientX;
-				onPointerDownPointerY = event.clientY;
-
-				onPointerDownLon = lon;
-				onPointerDownLat = lat;
-			}
-
-			function onDocumentMouseMove( event ) {
-				if ( isUserInteracting ) {
-					lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
-					lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
-					render();
-				}
-                updateBirdsMov(event);
-			}
-
-			function onDocumentMouseUp( event ) {
-				isUserInteracting = false;
-				render();
-			}
-
-			function onDocumentMouseWheel( event ) {
-				camera.fov -= event.wheelDeltaY * 0.05;
-				camera.updateProjectionMatrix();
-				render();
-			}
-
-			function onDocumentTouchStart( event ) {
-				if ( event.touches.length == 1 ) {
-					event.preventDefault();
-
-					onPointerDownPointerX = event.touches[ 0 ].pageX;
-					onPointerDownPointerY = event.touches[ 0 ].pageY;
-
-					onPointerDownLon = lon;
-					onPointerDownLat = lat;
-				}
-			}
-
-			function onDocumentTouchMove( event ) {
-				if ( event.touches.length == 1 ) {
-					event.preventDefault();
-
-					lon = ( onPointerDownPointerX - event.touches[0].pageX ) * 0.1 + onPointerDownLon;
-					lat = ( event.touches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
-
-					render();
-				}
-			}
-
-			function render() {
-				lat = Math.max( - 85, Math.min( 85, lat ) );
-				phi = THREE.Math.degToRad( 90 - lat );
-				theta = THREE.Math.degToRad( lon );
-
-				target.x = 500 * Math.sin( phi ) * Math.cos( theta );
-				target.y = 500 * Math.cos( phi );
-				target.z = 500 * Math.sin( phi ) * Math.sin( theta );
-
-				camera.lookAt( target );
-
-				renderer.render( scene, camera );
-			}
-            
-			function animate() {
-				requestAnimationFrame( animate );
-
-				lon +=  0.1;
-				lat = Math.max( - 85, Math.min( 85, lat ) );
-				phi = THREE.Math.degToRad( 90 - lat );
-				theta = THREE.Math.degToRad( lon );
-
-				target.x = Math.sin( phi ) * Math.cos( theta );
-				target.y = Math.cos( phi );
-				target.z = Math.sin( phi ) * Math.sin( theta );
-
-				camera.lookAt( target );
-
-                renderBirds();
-				renderer.render( scene, camera );
-			}
-            
-            function renderBirds() {
-				for ( var i = 0, il = birds.length; i < il; i++ ) {
-					boid = boids[ i ];
-					boid.run( boids );
-
-					bird = birds[ i ];
-
-					color = bird.material.color;
-					color.r = color.g = color.b = (500 - bird.position.z) / 1000;
-
-					bird.rotation.y = Math.atan2( - boid.velocity.z, boid.velocity.x );
-					bird.rotation.z = Math.asin( boid.velocity.y / boid.velocity.length() );
-
-					bird.phase = ( bird.phase + ( Math.max( 0, bird.rotation.z ) + 0.1 )  ) % 62.83;
-					bird.geometry.vertices[ 5 ].y = bird.geometry.vertices[ 4 ].y = Math.sin( bird.phase ) * 5;
-				}
-				renderer.render( scene, camera );
-			}
-            
-   			function updateBirdsMov( event ) {
-				var vector = new THREE.Vector3(
-                    event.clientX - (window.innerWidth / 2), 
-                    -event.clientY + (window.innerHeight / 2), 
-                    0);
-            
-				for (var i = 0, il = boids.length; i < il; i++) {
-					boid = boids[ i ];
-					vector.z = boid.position.z;
-					boid.repulse(vector);
-				}
-			}
-		</script>
- 	</body>
+		#render_canvas {
+			width   : 100%;
+			height  : 100%;
+			touch-action: none;
+		}
+	</style>
+</head>
+<body>
+	<script src="scripts/ui.js"></script>
+	<script src="scripts/main.js"></script>
+</body>
 </html>

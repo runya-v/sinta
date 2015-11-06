@@ -55,7 +55,7 @@ public:
 
 
 namespace test {
-
+namespace details {
 /// Количество тестируемых массивов в эксперименте
 static const size_t ARRAYS_NUM = 10;
 
@@ -127,70 +127,58 @@ public:
 };
 
 
+/**
+ * \brief Оператор вывода TestSortElement в стандартный вывод.
+ */
 std::ostream& operator << (std::ostream& stream, const TestSortElement &element) {
     stream << element.string();
     return stream;
 }
 
 
-///**
-// * \brief Оператор вывода эелемента в стандартный вывод.
-// */
-//std::string& operator << (const TestSortElement& element) {
-//    return element._str;
-//}
-
-
 /**
- * \brief Структура произвольно заполняющая тестовый массив.
+ * \brief Метод возвращающий произвольный элемент для тривиального типа.
  */
 template<class T>
-struct RandomInitialCondition {
-    std::vector<T> _buf;
-
-    RandomInitialCondition(const size_t len) : _buf(len){
-        for (size_t i = 0; i < len; ++i) {
-            // Определение приближённого максимального хранимого тривиальным типом значения.
-            size_t max = (1 << ((sizeof(T) * 8) - 1)) - 1;
-            // Заполнение рандомными значениями в пределах максимального значения типа
-            _buf[i] = rand() % max;
-        }
-    }
-};
+T GetRandomValue() {
+    // Определение приближённого максимального хранимого тривиальным типом значения.
+    return rand() % ((1 << ((sizeof(T) * 8) - 1)) - 1);
+}
 
 
 /**
- * \brief Специализация структуры произвольно заполняющей тестовый массив для чисел с плавающей точкой.
+ * \brief Специализация метода возвращающего произвольный элемент для double.
  */
 template<>
-struct RandomInitialCondition<double> {
-    std::vector<double> _buf;
-
-    RandomInitialCondition(const size_t len) : _buf(len) {
-        for (size_t i = 0; i < len; ++i) {
-            _buf[i] = static_cast<double>(rand() / static_cast<double>(RAND_MAX));
-        }
-    }
-};
+double GetRandomValue<double>() {
+    return static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
+}
 
 
 /**
- * \brief Специализация структуры произвольно заполняющей тестовый массив для пользовательского типа.
+ * \brief Специализация метода возвращающего элемент для сложного объекта.
  */
 template<>
-struct RandomInitialCondition<TestSortElement> {
-    std::vector<TestSortElement> _buf;
-
-    RandomInitialCondition(const size_t len) : _buf(len) {
-        for (size_t i = 0; i < len; ++i) {
-            _buf[i] = TestSortElement();
-        }
-    }
-};
+TestSortElement GetRandomValue<TestSortElement>() {
+    return TestSortElement();
+}
 
 
 /**
- * \brief Функция частичного перемешивание массива данных.
+ * \brief Функция произвольно заполняющая тестовый массив.
+ */
+template<class T>
+std::vector<T> RandomInitialCondition(const size_t len) {
+    std::vector<T> buf(len);
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = GetRandomValue<T>();
+    }
+    return buf;
+}
+
+
+/**
+ * \brief Функция частичного перемешивающая массива данных.
  */
 template<class T>
 void NearlyMix(std::vector<T>& buf) {
@@ -209,52 +197,119 @@ void NearlyMix(std::vector<T>& buf) {
 
 
 /**
- * \brief Структура заполняющая тестовый массив частично отсортированными данными.
+ * \brief Функция возвращающая элемент по возрастанию для тривиального типа.
  */
 template<class T>
-struct NearlySortedInitialCondition {
-    std::vector<T> _buf;
-
-    NearlySortedInitialCondition(const size_t len) : _buf(len){
-        for (size_t i = 0; i < len; ++i) {
-            _buf[i] = i;
-        }
-        NearlyMix(_buf);
-    }
-};
+T GetUpValue(size_t i) {
+    return i;
+}
 
 
 /**
- * \brief Специализация структуры заполняющей тестовый массив частично отсортированными числами с плавающей точкой.
+ * \brief Специализация функции возвращающей элемент по возрастанию для double.
  */
 template<>
-struct NearlySortedInitialCondition<double> {
-    std::vector<double> _buf;
-
-    NearlySortedInitialCondition(const size_t len) : _buf(len) {
-        for (size_t i = 0; i < len; ++i) {
-            _buf[i] = static_cast<double>(static_cast<double>(i) / static_cast<double>(len));
-        }
-        NearlyMix(_buf);
-    }
-};
+double GetUpValue<double>(size_t i) {
+    return static_cast<double>(i) / static_cast<double>(RAND_MAX);
+}
 
 
 /**
- * \brief Специализация структуры заполняющей частично отсортированно тестовый массив для пользовательского типа.
+ * \brief Функция заполняющая тестовый массив частично отсортированными данными.
+ */
+template<class T>
+std::vector<T> NearlySortedInitialCondition(const size_t len) {
+    std::vector<T> buf(len);
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = GetUpValue<T>(i);
+    }
+    NearlyMix(buf);
+    return buf;
+}
+
+
+/**
+ * \brief Специализация функции заполняющей частично отсортированно тестовый массив для пользовательского типа.
  */
 template<>
-struct NearlySortedInitialCondition<TestSortElement> {
-    std::vector<TestSortElement> _buf;
-
-    NearlySortedInitialCondition(const size_t len) : _buf(len) {
-        for (size_t i = 0; i < len; ++i) {
-            _buf[i] = TestSortElement();
-        }
-        std::sort(_buf.begin(), _buf.end());
-        NearlyMix(_buf);
+std::vector<TestSortElement> NearlySortedInitialCondition<TestSortElement>(const size_t len) {
+    std::vector<TestSortElement> buf(len);
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = TestSortElement();
     }
-};
+    std::sort(buf.begin(), buf.end());
+    NearlyMix(buf);
+    return buf;
+}
+
+
+/**
+ * \brief Функция возвращающая элемент для тривиального типа по убыванию.
+ */
+template<class T>
+T GetDownValue(size_t i, size_t len) {
+    return len - i;
+}
+
+
+/**
+ * \brief Специализация функции возвращающей элемент для double по убыванию.
+ */
+template<>
+double GetDownValue<double>(size_t i, size_t len) {
+    return static_cast<double>(len - i) / static_cast<double>(RAND_MAX);
+}
+
+
+/**
+ * \brief Функция заполняющая тестовый массив по убыванию.
+ */
+template<class T>
+std::vector<T> ReverseSortedInitialCondition(const size_t len) {
+    std::vector<T> buf;
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = GetDownValue<T>(i, len);
+    }
+    return buf;
+}
+
+
+/**
+ * \brief Специализация функции заполняющей тестовый массив по убыванию для TestSortElement.
+ */
+template<>
+std::vector<TestSortElement> ReverseSortedInitialCondition<TestSortElement>(const size_t len) {
+    std::vector<TestSortElement> buf(len);
+    for (size_t i = 0; i < len; ++i) {
+        buf[i] = TestSortElement();
+    }
+    auto minore = [](const TestSortElement &a, const TestSortElement &b) {
+        return a > b;
+    };
+    std::sort(buf.begin(), buf.end(), minore);
+    return buf;
+}
+
+
+/**
+ * \brief Функция заполняющая тестовый массив повторяющимися значениями.
+ */
+template<class T>
+std::vector<T> FewUniqueInitialCondition(const size_t len) {
+    std::vector<T> buf;
+    // Получение количества частей массива соотвествующее степени длинны массива
+    size_t k = static_cast<size_t>(std::log(static_cast<double>(len)));
+    // Получение количества повторяющихся элементов
+    size_t m = static_cast<size_t>(std::floor(static_cast<double>(len) / static_cast<double>(k) + 0.5));
+
+    for (size_t i = 0; i < m; ++i) {
+        T value = GetRandomValue<T>();
+        for (size_t j = 0; j < k; ++j) {
+            buf.push_back(value);
+        }
+    }
+    return buf;
+}
 
 
 /**
@@ -279,18 +334,29 @@ public:
         for (size_t len = MIN_ARRAY_LEN; len < MAX_ARRAY_LEN; len <<= 1, ++i) {
             switch(init_condition) {
             case InitialCondition::RANDOM:
-                _char_array[i]     = RandomInitialCondition<char>(len)._buf;
-                _int_array[i]      = RandomInitialCondition<int>(len)._buf;
-                _double_array[i]   = RandomInitialCondition<double>(len)._buf;
-                _elements_array[i] = RandomInitialCondition<TestSortElement>(len)._buf;
+                _char_array[i]     = RandomInitialCondition<char>(len);
+                _int_array[i]      = RandomInitialCondition<int>(len);
+                _double_array[i]   = RandomInitialCondition<double>(len);
+                _elements_array[i] = RandomInitialCondition<TestSortElement>(len);
                 break;
             case InitialCondition::NEARLY_SORTED:
-                _char_array[i]     = NearlySortedInitialCondition<char>(len)._buf;
-                _int_array[i]      = NearlySortedInitialCondition<int>(len)._buf;
-                _double_array[i]   = NearlySortedInitialCondition<double>(len)._buf;
-                _elements_array[i] = NearlySortedInitialCondition<TestSortElement>(len)._buf;
+                _char_array[i]     = NearlySortedInitialCondition<char>(len);
+                _int_array[i]      = NearlySortedInitialCondition<int>(len);
+                _double_array[i]   = NearlySortedInitialCondition<double>(len);
+                _elements_array[i] = NearlySortedInitialCondition<TestSortElement>(len);
                 break;
-            default:break;
+            case InitialCondition::REVERSED:
+                _char_array[i]     = ReverseSortedInitialCondition<char>(len);
+                _int_array[i]      = ReverseSortedInitialCondition<int>(len);
+                _double_array[i]   = ReverseSortedInitialCondition<double>(len);
+                _elements_array[i] = ReverseSortedInitialCondition<TestSortElement>(len);
+                break;
+            case InitialCondition::FEW_UNIQUE:
+                _char_array[i]     = FewUniqueInitialCondition<char>(len);
+                _int_array[i]      = FewUniqueInitialCondition<int>(len);
+                _double_array[i]   = FewUniqueInitialCondition<double>(len);
+                _elements_array[i] = FewUniqueInitialCondition<TestSortElement>(len);
+                break;
             }
         }
     }
@@ -300,23 +366,22 @@ public:
     const std::array<std::vector<double>, ARRAYS_NUM>& getDoubleArray() { return _double_array; }
     const std::array<std::vector<TestSortElement>, ARRAYS_NUM>& getElementsArray() { return _elements_array; }
 };
-
+} // details
 
 class BubbleSortTest {
+    typedef details::TestSortingArrayFactory TestSortingArrayFactory;
     typedef TestSortingArrayFactory::InitialCondition InitialCondition;
     std::shared_ptr<sort::exchange::BubbleSort> _sort;
 
 public:
     BubbleSortTest() {
-        TestSortingArrayFactory factory(InitialCondition::NEARLY_SORTED);
-        for (const auto &value : factory.getElementsArray()[0]) {
+        TestSortingArrayFactory factory(InitialCondition::FEW_UNIQUE);
+        for (const auto &value : factory.getElementsArray()[3]) {
             std::cout << "[" << value << "]\n";
         }
     }
 };
 } // test
-
-
 
 
 BOOST_AUTO_TEST_CASE(TestCppExamples) {
