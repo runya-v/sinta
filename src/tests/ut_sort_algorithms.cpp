@@ -19,8 +19,10 @@
 #include <climits>
 #include <memory>
 #include <functional>
+#include <chrono>
 
 #include "Log.hpp"
+#include "Demangle.hpp"
 
 
 namespace sort {
@@ -33,18 +35,16 @@ public:
     /**
      * \brief Объменная сортировка выбором .
      *
-     * \param buf Ссылка на буфер объектов, для которых определён оператор < и >
+     * \param buf Ссылка на буфер объектов, для которых определён оператор ">"
      */
     template<class T>
     BubbleSort(std::vector<T>& buf) {
         for (size_t m = buf.size() - 1; m > 1; --m) {
             for (size_t i = 0; i < m; i++) {
-                T &a = &buf[i];
-                T &b = &buf[i + 1];
-                if (a > b) {
-                    a ^= b;
-                    b ^= a;
-                    a ^= b;
+                if (buf[i] > buf[i + 1]) {
+                    T temp = buf[i];
+                    buf[i] = buf[i + 1];
+                    buf[i + 1] = temp;
                 }
             }
         }
@@ -57,7 +57,7 @@ public:
 namespace test {
 namespace details {
 /// Количество тестируемых массивов в эксперименте
-static const size_t ARRAYS_NUM = 10;
+static const size_t ARRAYS_NUM = 6;
 
 /// Минимальный размер тестируемого массива
 static const size_t MIN_ARRAY_LEN = (1 << 6);
@@ -73,6 +73,10 @@ class TestSortElement {
     std::string _str;
 
 public:
+    /**
+     * \brief Конструктор выполняет генерацию символов в пределах от 'a' до 'z' при
+     *        произвольных значениях меньше чем "RAND_MAX / 2", и от 'A' до 'Z' в противном случае
+     */
     TestSortElement() {
         _str.resize(MIN_ARRAY_LEN);
         for (size_t i = 0; i < MIN_ARRAY_LEN; ++i) {
@@ -131,8 +135,7 @@ public:
  * \brief Оператор вывода TestSortElement в стандартный вывод.
  */
 std::ostream& operator << (std::ostream& stream, const TestSortElement &element) {
-    stream << element.string();
-    return stream;
+    return (stream << element.string());
 }
 
 
@@ -141,7 +144,7 @@ std::ostream& operator << (std::ostream& stream, const TestSortElement &element)
  */
 template<class T>
 T GetRandomValue() {
-    // Определение приближённого максимального хранимого тривиальным типом значения.
+    // Определение приближённого максимального хранимого, тривиальным типом значения.
     return rand() % ((1 << ((sizeof(T) * 8) - 1)) - 1);
 }
 
@@ -316,19 +319,25 @@ std::vector<T> FewUniqueInitialCondition(const size_t len) {
  * \brief Класс реализующий заполнение различных массивов для тестирования алгоритмов сортировки.
  */
 class TestSortingArrayFactory {
-    std::array<std::vector<char>, ARRAYS_NUM>            _char_array;
-    std::array<std::vector<int>, ARRAYS_NUM>             _int_array;
-    std::array<std::vector<double>, ARRAYS_NUM>          _double_array;
-    std::array<std::vector<TestSortElement>, ARRAYS_NUM> _elements_array;
+    std::array<std::vector<char>, ARRAYS_NUM>            _char_array;     ///< Массив тестовых вуферов с char значениями
+    std::array<std::vector<int>, ARRAYS_NUM>             _int_array;      ///< Массив тестовых вуферов с int значениями
+    std::array<std::vector<double>, ARRAYS_NUM>          _double_array;   ///< Массив тестовых вуферов с double значениями
+    std::array<std::vector<TestSortElement>, ARRAYS_NUM> _elements_array; ///< Массив тестовых вуферов с составными значениями
 
 public:
+    /**
+     * \brief Константы тапов заполнения тестовых массивов.
+     */
     enum class InitialCondition {
-        RANDOM,
-        NEARLY_SORTED,
-        REVERSED,
-        FEW_UNIQUE
+        RANDOM,        ///< Произвольное заполнение
+        NEARLY_SORTED, ///< Частично отсортированное заполнение
+        REVERSED,      ///< Обратно отсортированное заполнение
+        FEW_UNIQUE     ///< Частично повторяющееся заполнение
     };
 
+    /**
+     * \brief Класс реализующий заполнение различных массивов для тестирования алгоритмов сортировки.
+     */
     TestSortingArrayFactory(InitialCondition init_condition) {
         size_t i = 0;
         for (size_t len = MIN_ARRAY_LEN; len < MAX_ARRAY_LEN; len <<= 1, ++i) {
@@ -361,35 +370,66 @@ public:
         }
     }
 
-    const std::array<std::vector<char>, ARRAYS_NUM>& getCharArray() { return _char_array; }
-    const std::array<std::vector<int>, ARRAYS_NUM>& getIntArray() { return _int_array; }
-    const std::array<std::vector<double>, ARRAYS_NUM>& getDoubleArray() { return _double_array; }
-    const std::array<std::vector<TestSortElement>, ARRAYS_NUM>& getElementsArray() { return _elements_array; }
+    std::array<std::vector<char>, ARRAYS_NUM>& getCharArray() { return _char_array; }
+    std::array<std::vector<int>, ARRAYS_NUM>& getIntArray() { return _int_array; }
+    std::array<std::vector<double>, ARRAYS_NUM>& getDoubleArray() { return _double_array; }
+    std::array<std::vector<TestSortElement>, ARRAYS_NUM>& getElementsArray() { return _elements_array; }
 };
+
+
+template<class T>
+void BufferTest(std::vector<T>& buf) {
+    std::cout << "------------------------------------------------------\n";
+    std::cout << "Массив типа \"" << utils::Demangle(typeid(T).name()).string() << "\", размер = " << buf.size() << "\n";
+    std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+    sort::exchange::BubbleSort buble_sort(buf);
+    std::chrono::steady_clock::time_point stop_time = std::chrono::steady_clock::now();
+    std::chrono::nanoseconds nsecs = std::chrono::duration_cast<std::chrono::nanoseconds>(stop_time - start_time);
+    std::chrono::seconds secs = std::chrono::duration_cast<std::chrono::seconds>(nsecs);
+    std::cout << "Время сортировки: " << secs.count() << " сек. или " << nsecs.count() << " н.сек.\n";
+}
 } // details
+
 
 class BubbleSortTest {
     typedef details::TestSortingArrayFactory TestSortingArrayFactory;
     typedef TestSortingArrayFactory::InitialCondition InitialCondition;
-    std::shared_ptr<sort::exchange::BubbleSort> _sort;
+    typedef sort::exchange::BubbleSort BubbleSort;
+
+    std::shared_ptr<BubbleSort> _sort;
 
 public:
     BubbleSortTest() {
-        TestSortingArrayFactory factory(InitialCondition::FEW_UNIQUE);
-        for (const auto &value : factory.getElementsArray()[3]) {
-            std::cout << "[" << value << "]\n";
-        }
+        auto array_test_func = [](TestSortingArrayFactory&& factory) {
+            for (auto &buf : factory.getCharArray()) {
+                details::BufferTest(buf);
+            }
+            for (auto &buf : factory.getIntArray()) {
+                details::BufferTest(buf);
+            }
+            for (auto &buf : factory.getDoubleArray()) {
+                details::BufferTest(buf);
+            }
+            for (auto &buf : factory.getElementsArray()) {
+                details::BufferTest(buf);
+            }
+        };
+
+        array_test_func(std::move(TestSortingArrayFactory(InitialCondition::RANDOM)));
+
+        TestSortingArrayFactory nearly_factory(InitialCondition::NEARLY_SORTED);
+        TestSortingArrayFactory reversed_factory(InitialCondition::REVERSED);
+        TestSortingArrayFactory few_unique_factory(InitialCondition::FEW_UNIQUE);
     }
 };
 } // test
 
 
-BOOST_AUTO_TEST_CASE(TestCppExamples) {
+BOOST_AUTO_TEST_CASE(TestSortingAlgorithms) {
     LOG_TO_STDOUT;
+
     // Инициализация рандом-генератора.
     std::srand(std::time(NULL));
 
-
     test::BubbleSortTest bubble_sort;
-
 }
