@@ -269,7 +269,7 @@ double GetDownValue<double>(size_t i, size_t len) {
  */
 template<class T>
 std::vector<T> ReverseSortedInitialCondition(const size_t len) {
-    std::vector<T> buf;
+    std::vector<T> buf(len);
     for (size_t i = 0; i < len; ++i) {
         buf[i] = GetDownValue<T>(i, len);
     }
@@ -319,11 +319,6 @@ std::vector<T> FewUniqueInitialCondition(const size_t len) {
  * \brief Класс реализующий заполнение различных массивов для тестирования алгоритмов сортировки.
  */
 class TestSortingArrayFactory {
-    std::array<std::vector<char>, ARRAYS_NUM>            _char_array;     ///< Массив тестовых вуферов с char значениями
-    std::array<std::vector<int>, ARRAYS_NUM>             _int_array;      ///< Массив тестовых вуферов с int значениями
-    std::array<std::vector<double>, ARRAYS_NUM>          _double_array;   ///< Массив тестовых вуферов с double значениями
-    std::array<std::vector<TestSortElement>, ARRAYS_NUM> _elements_array; ///< Массив тестовых вуферов с составными значениями
-
 public:
     /**
      * \brief Константы тапов заполнения тестовых массивов.
@@ -332,61 +327,103 @@ public:
         RANDOM,        ///< Произвольное заполнение
         NEARLY_SORTED, ///< Частично отсортированное заполнение
         REVERSED,      ///< Обратно отсортированное заполнение
-        FEW_UNIQUE     ///< Частично повторяющееся заполнение
+        FEW_UNIQUE,    ///< Частично повторяющееся заполнение
+        SIZE           ///< Количество типов заполнений
     };
 
     /**
+     * \brief Структура хранения массивов буферов для всех тестовых типов заполнений и типов данных.
+     */
+    struct ArraysContainer {
+        std::array<std::vector<char>, ARRAYS_NUM>            _char_array;     ///< Массив тестовых вуферов с char значениями
+        std::array<std::vector<int>, ARRAYS_NUM>             _int_array;      ///< Массив тестовых вуферов с int значениями
+        std::array<std::vector<double>, ARRAYS_NUM>          _double_array;   ///< Массив тестовых вуферов с double значениями
+        std::array<std::vector<TestSortElement>, ARRAYS_NUM> _elements_array; ///< Массив тестовых вуферов с составными значениями
+    };
+
+private:
+    std::array<ArraysContainer, static_cast<size_t>(InitialCondition::SIZE)> _containers; ///< Хранилище всех авриантов заполнения
+
+public:
+    /**
      * \brief Класс реализующий заполнение различных массивов для тестирования алгоритмов сортировки.
      */
-    TestSortingArrayFactory(InitialCondition init_condition) {
-        size_t i = 0;
-        for (size_t len = MIN_ARRAY_LEN; len < MAX_ARRAY_LEN; len <<= 1, ++i) {
-            switch(init_condition) {
-            case InitialCondition::RANDOM:
-                _char_array[i]     = RandomInitialCondition<char>(len);
-                _int_array[i]      = RandomInitialCondition<int>(len);
-                _double_array[i]   = RandomInitialCondition<double>(len);
-                _elements_array[i] = RandomInitialCondition<TestSortElement>(len);
-                break;
-            case InitialCondition::NEARLY_SORTED:
-                _char_array[i]     = NearlySortedInitialCondition<char>(len);
-                _int_array[i]      = NearlySortedInitialCondition<int>(len);
-                _double_array[i]   = NearlySortedInitialCondition<double>(len);
-                _elements_array[i] = NearlySortedInitialCondition<TestSortElement>(len);
-                break;
-            case InitialCondition::REVERSED:
-                _char_array[i]     = ReverseSortedInitialCondition<char>(len);
-                _int_array[i]      = ReverseSortedInitialCondition<int>(len);
-                _double_array[i]   = ReverseSortedInitialCondition<double>(len);
-                _elements_array[i] = ReverseSortedInitialCondition<TestSortElement>(len);
-                break;
-            case InitialCondition::FEW_UNIQUE:
-                _char_array[i]     = FewUniqueInitialCondition<char>(len);
-                _int_array[i]      = FewUniqueInitialCondition<int>(len);
-                _double_array[i]   = FewUniqueInitialCondition<double>(len);
-                _elements_array[i] = FewUniqueInitialCondition<TestSortElement>(len);
-                break;
+    TestSortingArrayFactory() {
+        typedef InitialCondition IC;
+
+        // Функтор одно типа заполнения для различных буферов типов данных
+        auto init = [this](IC initial_condition) {
+            size_t i = 0;
+            for (size_t len = MIN_ARRAY_LEN; len < MAX_ARRAY_LEN; len <<= 1, ++i) {
+                switch(initial_condition) {
+                    case IC::RANDOM: {
+                        LOG(DEBUG) << "Init RANDOM buffers; len=" << len << "; id=" << i;
+                        ArraysContainer container = _containers[static_cast<size_t>(IC::RANDOM)];
+                        container._char_array[i]     = RandomInitialCondition<char>(len);
+                        container._int_array[i]      = RandomInitialCondition<int>(len);
+                        container._double_array[i]   = RandomInitialCondition<double>(len);
+                        container._elements_array[i] = RandomInitialCondition<TestSortElement>(len);
+                    } break;
+                    case IC::NEARLY_SORTED: {
+                        LOG(DEBUG) << "Init NEARLY_SORTED buffers; len = " << len << "; id=" << i;
+                        ArraysContainer container = _containers[static_cast<size_t>(IC::NEARLY_SORTED)];
+                        container._char_array[i]     = NearlySortedInitialCondition<char>(len);
+                        container._int_array[i]      = NearlySortedInitialCondition<int>(len);
+                        container._double_array[i]   = NearlySortedInitialCondition<double>(len);
+                        container._elements_array[i] = NearlySortedInitialCondition<TestSortElement>(len);
+                    } break;
+                    case IC::REVERSED: {
+                        LOG(DEBUG) << "Init REVERSED buffers; len = " << len << "; id=" << i;
+                        ArraysContainer container = _containers[static_cast<size_t>(IC::REVERSED)];
+                        container._char_array[i]     = ReverseSortedInitialCondition<char>(len);
+                        container._int_array[i]      = ReverseSortedInitialCondition<int>(len);
+                        container._double_array[i]   = ReverseSortedInitialCondition<double>(len);
+                        container._elements_array[i] = ReverseSortedInitialCondition<TestSortElement>(len);
+                    } break;
+                    case IC::FEW_UNIQUE: {
+                        LOG(DEBUG) << "Init FEW_UNIQUE buffers; len = " << len << "; id=" << i;
+                        ArraysContainer container = _containers[static_cast<size_t>(IC::FEW_UNIQUE)];
+                        container._char_array[i]     = FewUniqueInitialCondition<char>(len);
+                        container._int_array[i]      = FewUniqueInitialCondition<int>(len);
+                        container._double_array[i]   = FewUniqueInitialCondition<double>(len);
+                        container._elements_array[i] = FewUniqueInitialCondition<TestSortElement>(len);
+                    } break;
+                    default: throw std::invalid_argument("Указан некорректный тип заполнения.");
+                }
             }
-        }
+        };
+
+        // Инициализация заполнений
+        init(IC::RANDOM);
+        init(IC::NEARLY_SORTED);
+        init(IC::REVERSED);
+        init(IC::FEW_UNIQUE);
     }
 
-    std::array<std::vector<char>, ARRAYS_NUM>& getCharArray() { return _char_array; }
-    std::array<std::vector<int>, ARRAYS_NUM>& getIntArray() { return _int_array; }
-    std::array<std::vector<double>, ARRAYS_NUM>& getDoubleArray() { return _double_array; }
-    std::array<std::vector<TestSortElement>, ARRAYS_NUM>& getElementsArray() { return _elements_array; }
+    ArraysContainer& getArraysContainer(InitialCondition initial_condition) {
+        if (static_cast<size_t>(InitialCondition::SIZE) <= static_cast<size_t>(initial_condition)) {
+            throw std::invalid_argument("Указан некорректный тип заполнения.");
+        }
+        std::cout << _containers[static_cast<size_t>(initial_condition)]._char_array.size() << "\n";
+        return _containers[static_cast<size_t>(initial_condition)];
+    }
 };
 
 
 template<class T>
-void BufferTest(std::vector<T>& buf) {
-    std::cout << "------------------------------------------------------\n";
-    std::cout << "Массив типа \"" << utils::Demangle(typeid(T).name()).string() << "\", размер = " << buf.size() << "\n";
+void BufferTest(std::vector<T> &buf) {
+    if (not buf.size()) {
+        throw std::runtime_error("Передан пустой массив \"" + utils::Demangle(typeid(T).name()).string() + "\".");
+    }
+    std::cout << "======================================================\n";
+    std::cout << "Массив типа \"" << utils::Demangle(typeid(T).name()).string() << "\", размер=" << buf.size() << "\n";
     std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
     sort::exchange::BubbleSort buble_sort(buf);
     std::chrono::steady_clock::time_point stop_time = std::chrono::steady_clock::now();
     std::chrono::nanoseconds nsecs = std::chrono::duration_cast<std::chrono::nanoseconds>(stop_time - start_time);
     std::chrono::seconds secs = std::chrono::duration_cast<std::chrono::seconds>(nsecs);
     std::cout << "Время сортировки: " << secs.count() << " сек. или " << nsecs.count() << " н.сек.\n";
+    std::cout << "------------------------------------------------------\n";
 }
 } // details
 
@@ -394,32 +431,37 @@ void BufferTest(std::vector<T>& buf) {
 class BubbleSortTest {
     typedef details::TestSortingArrayFactory TestSortingArrayFactory;
     typedef TestSortingArrayFactory::InitialCondition InitialCondition;
+    typedef TestSortingArrayFactory::ArraysContainer ArraysContainer;
     typedef sort::exchange::BubbleSort BubbleSort;
 
     std::shared_ptr<BubbleSort> _sort;
 
 public:
-    BubbleSortTest() {
-        auto array_test_func = [](TestSortingArrayFactory&& factory) {
-            for (auto &buf : factory.getCharArray()) {
+    BubbleSortTest(TestSortingArrayFactory &factory) {
+        auto array_test_func = [](ArraysContainer &&container) {
+            std::cout << "check0\n" << std::flush;
+            for (auto &buf : container._char_array) {
                 details::BufferTest(buf);
             }
-            for (auto &buf : factory.getIntArray()) {
+            std::cout << "check1\n" << std::flush;
+            for (auto &buf : container._int_array) {
                 details::BufferTest(buf);
             }
-            for (auto &buf : factory.getDoubleArray()) {
+            std::cout << "check2\n" << std::flush;
+            for (auto &buf : container._double_array) {
                 details::BufferTest(buf);
             }
-            for (auto &buf : factory.getElementsArray()) {
+            std::cout << "check3\n" << std::flush;
+            for (auto &buf : container._elements_array) {
                 details::BufferTest(buf);
             }
+            std::cout << "check4\n" << std::flush;
         };
 
-        array_test_func(std::move(TestSortingArrayFactory(InitialCondition::RANDOM)));
-
-        TestSortingArrayFactory nearly_factory(InitialCondition::NEARLY_SORTED);
-        TestSortingArrayFactory reversed_factory(InitialCondition::REVERSED);
-        TestSortingArrayFactory few_unique_factory(InitialCondition::FEW_UNIQUE);
+        array_test_func(std::move(factory.getArraysContainer(InitialCondition::RANDOM)));
+        array_test_func(std::move(factory.getArraysContainer(InitialCondition::NEARLY_SORTED)));
+        array_test_func(std::move(factory.getArraysContainer(InitialCondition::REVERSED)));
+        array_test_func(std::move(factory.getArraysContainer(InitialCondition::FEW_UNIQUE)));
     }
 };
 } // test
@@ -431,5 +473,9 @@ BOOST_AUTO_TEST_CASE(TestSortingAlgorithms) {
     // Инициализация рандом-генератора.
     std::srand(std::time(NULL));
 
-    test::BubbleSortTest bubble_sort;
+    LOG(DEBUG) << "Инициализация тестовых данных.";
+    test::details::TestSortingArrayFactory factory;
+    LOG(DEBUG) << "Тестирование Пузырького алгоритма сортировки.";
+    test::BubbleSortTest bubble_sort(factory);
+    LOG(DEBUG) << "Тестирование завершено.";
 }
