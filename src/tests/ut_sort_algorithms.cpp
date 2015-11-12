@@ -29,6 +29,7 @@ namespace sort {
 namespace exchange {
 /**
  * \brief Класс реализующий пузырьковую сортировку, относиться к множеству объменных сортировок.
+ *        f(n) g(n)
  */
 class BubbleSort {
 public:
@@ -39,12 +40,10 @@ public:
      */
     template<class T>
     BubbleSort(std::vector<T>& buf) {
-        for (size_t m = buf.size() - 1; m > 1; --m) {
-            for (size_t i = 0; i < m; i++) {
-                if (buf[i] > buf[i + 1]) {
-                    T temp = buf[i];
-                    buf[i] = buf[i + 1];
-                    buf[i + 1] = temp;
+        for (size_t i = 0; i < buf.size() - 1; ++i) {
+            for (size_t j = 0; j < buf.size() - i - 1; ++j) {
+                if (buf[j] > buf[j + 1]) {
+                    std::swap(buf[j], buf[j + 1]);
                 }
             }
         }
@@ -342,7 +341,8 @@ public:
     };
 
 private:
-    std::array<ArraysContainer, static_cast<size_t>(InitialCondition::SIZE)> _containers; ///< Хранилище всех авриантов заполнения
+    typedef std::array<ArraysContainer, static_cast<size_t>(InitialCondition::SIZE)> ConditionsContainers;
+    ConditionsContainers _containers; ///< Хранилище всех авриантов заполнения
 
 public:
     /**
@@ -358,7 +358,7 @@ public:
                 switch(initial_condition) {
                     case IC::RANDOM: {
                         LOG(DEBUG) << "Init RANDOM buffers; len=" << len << "; id=" << i;
-                        ArraysContainer container = _containers[static_cast<size_t>(IC::RANDOM)];
+                        ArraysContainer &container = _containers[static_cast<size_t>(IC::RANDOM)];
                         container._char_array[i]     = RandomInitialCondition<char>(len);
                         container._int_array[i]      = RandomInitialCondition<int>(len);
                         container._double_array[i]   = RandomInitialCondition<double>(len);
@@ -366,7 +366,7 @@ public:
                     } break;
                     case IC::NEARLY_SORTED: {
                         LOG(DEBUG) << "Init NEARLY_SORTED buffers; len = " << len << "; id=" << i;
-                        ArraysContainer container = _containers[static_cast<size_t>(IC::NEARLY_SORTED)];
+                        ArraysContainer &container = _containers[static_cast<size_t>(IC::NEARLY_SORTED)];
                         container._char_array[i]     = NearlySortedInitialCondition<char>(len);
                         container._int_array[i]      = NearlySortedInitialCondition<int>(len);
                         container._double_array[i]   = NearlySortedInitialCondition<double>(len);
@@ -374,7 +374,7 @@ public:
                     } break;
                     case IC::REVERSED: {
                         LOG(DEBUG) << "Init REVERSED buffers; len = " << len << "; id=" << i;
-                        ArraysContainer container = _containers[static_cast<size_t>(IC::REVERSED)];
+                        ArraysContainer &container = _containers[static_cast<size_t>(IC::REVERSED)];
                         container._char_array[i]     = ReverseSortedInitialCondition<char>(len);
                         container._int_array[i]      = ReverseSortedInitialCondition<int>(len);
                         container._double_array[i]   = ReverseSortedInitialCondition<double>(len);
@@ -382,7 +382,7 @@ public:
                     } break;
                     case IC::FEW_UNIQUE: {
                         LOG(DEBUG) << "Init FEW_UNIQUE buffers; len = " << len << "; id=" << i;
-                        ArraysContainer container = _containers[static_cast<size_t>(IC::FEW_UNIQUE)];
+                        ArraysContainer &container = _containers[static_cast<size_t>(IC::FEW_UNIQUE)];
                         container._char_array[i]     = FewUniqueInitialCondition<char>(len);
                         container._int_array[i]      = FewUniqueInitialCondition<int>(len);
                         container._double_array[i]   = FewUniqueInitialCondition<double>(len);
@@ -402,9 +402,9 @@ public:
 
     ArraysContainer& getArraysContainer(InitialCondition initial_condition) {
         if (static_cast<size_t>(InitialCondition::SIZE) <= static_cast<size_t>(initial_condition)) {
-            throw std::invalid_argument("Указан некорректный тип заполнения.");
+            throw std::invalid_argument("Указан некорректный тип заполнения \"" +
+                                        std::to_string(static_cast<size_t>(initial_condition)) + "\".");
         }
-        std::cout << _containers[static_cast<size_t>(initial_condition)]._char_array.size() << "\n";
         return _containers[static_cast<size_t>(initial_condition)];
     }
 };
@@ -415,7 +415,6 @@ void BufferTest(std::vector<T> &buf) {
     if (not buf.size()) {
         throw std::runtime_error("Передан пустой массив \"" + utils::Demangle(typeid(T).name()).string() + "\".");
     }
-    std::cout << "======================================================\n";
     std::cout << "Массив типа \"" << utils::Demangle(typeid(T).name()).string() << "\", размер=" << buf.size() << "\n";
     std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
     sort::exchange::BubbleSort buble_sort(buf);
@@ -439,28 +438,37 @@ class BubbleSortTest {
 public:
     BubbleSortTest(TestSortingArrayFactory &factory) {
         auto array_test_func = [](ArraysContainer &&container) {
-            std::cout << "check0\n" << std::flush;
             for (auto &buf : container._char_array) {
                 details::BufferTest(buf);
             }
-            std::cout << "check1\n" << std::flush;
             for (auto &buf : container._int_array) {
                 details::BufferTest(buf);
+                for (auto val : buf) {
+                    std::cout << val << "\n";
+                }
             }
-            std::cout << "check2\n" << std::flush;
             for (auto &buf : container._double_array) {
                 details::BufferTest(buf);
             }
-            std::cout << "check3\n" << std::flush;
             for (auto &buf : container._elements_array) {
                 details::BufferTest(buf);
             }
-            std::cout << "check4\n" << std::flush;
         };
 
+        std::cout << "======================================================\n";
+        std::cout << "Сортировка типа \"RANDOM\"\n";
         array_test_func(std::move(factory.getArraysContainer(InitialCondition::RANDOM)));
+
+        std::cout << "======================================================\n";
+        std::cout << "Сортировка типа \"NEARLY_SORTED\"\n";
         array_test_func(std::move(factory.getArraysContainer(InitialCondition::NEARLY_SORTED)));
+
+        std::cout << "======================================================\n";
+        std::cout << "Сортировка типа \"REVERSED\"\n";
         array_test_func(std::move(factory.getArraysContainer(InitialCondition::REVERSED)));
+
+        std::cout << "======================================================\n";
+        std::cout << "Сортировка типа \"FEW_UNIQUE\"\n";
         array_test_func(std::move(factory.getArraysContainer(InitialCondition::FEW_UNIQUE)));
     }
 };
