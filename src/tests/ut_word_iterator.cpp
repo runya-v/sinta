@@ -129,7 +129,7 @@ public:
 BOOST_AUTO_TEST_CASE(TestWordIterator) {
     LOG_TO_STDOUT;
 
-    // Для избежания зацикливания при тестировании, цилк лучше применять.
+    // Для избежания зацикливания при тестировании, цилк лучше не применять.
 
     // Тестирование смешанного случая
     test::WordIterator iter_1(" test string   with ,.?!:;[{()]symbols "), end;
