@@ -29,7 +29,7 @@ namespace sort {
 namespace exchange {
 /**
  * \brief Класс реализующий пузырьковую сортировку, относиться к множеству объменных сортировок.
- *        f(n) g(n)
+ *        Худшая оценка О(n * n), лучшая
  */
 class BubbleSort {
 public:
